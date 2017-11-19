@@ -1,6 +1,8 @@
 <template>
   <div class="wrap">设置
-    <input v-model="title" placeholder="edit me">
+    <h1>{{data.title}}</h1>
+    <input v-model="data.title" placeholder="edit me">
+    <button @click="handleSubmit">保存</button>
   </div>
 </template>
 
@@ -12,16 +14,19 @@ export default {
     };
   },
   computed: {
-    title: {
-      get() {
-        let { index } = this.currentComponent;
-        if (index === undefined) return "";
-        return this.$store.state.pageData.components[index].data.title;
-      },
-      set(val) {
-        let { index } = this.currentComponent;
-        this.$store.state.pageData.components[index].data.title = val;
-      }
+    data() {
+      let { index } = this.currentComponent;
+      if (index === undefined) return "";
+      return this.$store.state.pageData.components[index].data;
+    }
+  },
+  methods: {
+    handleSubmit() {
+      this.$store.commit("SET_COMPONENTS_DATA", {
+        index: this.currentComponent.index,
+        data: this.data
+      });
+      // 存localstorage
     }
   }
 };
