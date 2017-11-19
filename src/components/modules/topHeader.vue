@@ -18,10 +18,11 @@ export default {
 
 <style lang="less" scoped>
 .header {
-  width: 750px;
+  width: 100%;
   height: 64px;
   color: #7e57c2;
   background-color: #acf;
+  margin-top: 4px;
 }
 </style>
 
