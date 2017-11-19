@@ -18,7 +18,7 @@ export default {
 
 <style lang="less" scoped>
 .header {
-  width: 100%;
+  width: 750px;
   height: 64px;
   color: #7e57c2;
   background-color: #acf;
