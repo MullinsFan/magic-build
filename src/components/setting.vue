@@ -1,18 +1,25 @@
 <template>
   <div class="wrap">设置
-    <h1>{{data.title}}</h1>
-    <input v-model="data.title" placeholder="edit me">
+    <h1>{{data.name}}</h1>
+    <input v-model="data.name" placeholder="edit me">
     <button @click="handleSubmit">保存</button>
   </div>
 </template>
 
 <script>
 export default {
+
   data() {
     return {
-      currentComponent: this.$store.state.currentComponent
+      currentComponent: this.$store.state.currentComponent,
+      schema: null
     };
   },
+  // creat() {
+  //   let name = currentComponent.name
+  //   schema = require('./modules/' + name + '/' + name + 'schema.json')
+  //   console.log("schema", this.schema.type)
+  // },
   computed: {
     data() {
       let { index } = this.currentComponent;

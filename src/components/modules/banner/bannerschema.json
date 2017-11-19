@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "banner",
+  "type": "object",
+  "properties": {
+    "page": {
+      "title": "页数",
+      "name": "page",
+      "type": "integer",
+      "default": 5,
+      "minimum": 1
+    },
+    "background_color": {
+      "title": "背景颜色",
+      "name": "background_color",
+      "type": "string",
+      "format": "color",
+      "default": "#ffa500"
+    },
+    "speed": {
+      "title": "轮播速度",
+      "name": "speed",
+      "type": "integer",
+      "default": 3000,
+      "minimum": 600
+    },
+    "banners": {
+      "title": "各banner信息",
+      "name": "banners",
+      "type": "array",
+      "format": "table",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "title": "单个banner信息",
+        "properties": {
+          "src": {
+            "title": "图片链接",
+            "name": "src",
+            "type": "string"
+          },
+          "title": {
+            "title": "banner相关文字",
+            "name": "title",
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
