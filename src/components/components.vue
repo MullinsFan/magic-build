@@ -10,7 +10,6 @@
 
 <script>
 import modules from "./modules";
-import html2canvas from "html2canvas";
 const $window = window;
 export default {
   data() {
