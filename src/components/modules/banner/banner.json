@@ -1,0 +1,28 @@
+{
+  "name": "banner",
+  "page": 5,
+  "background_color": "#ffa500",
+  "speed": 3000,
+  "banners": [
+    {
+      "src": "src1",
+      "title": "some info1"
+    },
+    {
+      "src": "src2",
+      "title": "some info2"
+    },
+    {
+      "src": "src3",
+      "title": "some info3"
+    },
+    {
+      "src": "src4",
+      "title": "some info4"
+    },
+    {
+      "src": "src5",
+      "title": "some info5"
+    }
+  ]
+}

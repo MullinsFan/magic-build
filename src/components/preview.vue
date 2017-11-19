@@ -25,15 +25,16 @@ export default {
   methods: {
     drop(e) {
       // 放下拖拽元素操作
-      let { name } = JSON.parse(e.dataTransfer.getData("info"));
+      let { name, data } = JSON.parse(e.dataTransfer.getData("info"));
+      console.log("name:",name)
+      console.log("data:",data)
       this.$store.commit("SET_COMPONENTS", {
         // 模块名称
         name,
         // 模块数据
-        data: {
-          title: new Date().getTime()
-        }
+        data: data
       });
+      console.log(this.$store.state.pageData.components[0].name)
     },
 
     dragOver(e) {
@@ -48,9 +49,18 @@ export default {
     },
 
     handleClick(e) {
-      let index = e.target.dataset.index;
+      let index = findIndex(e.target);
+      console.log(index)
       let name = this.components[index].name;
       this.$store.commit("SET_CURRENT_COMPONENT", { index, name });
+      function findIndex(element) {
+        let index = element.dataset.index
+        if(index === undefined) {
+          return findIndex(element.parentElement)
+        } else {
+          return index
+        }
+      }
     }
   },
   components: {

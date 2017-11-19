@@ -4,6 +4,9 @@
       <li draggable="true" @dragstart="dragStart" @dragend="dragEnd" data-name="topHeader">
           <top-header />
       </li>
+      <li draggable="true" @dragstart="dragStart" @dragend="dragEnd" data-name="banner">
+          <banner></banner>
+      </li>
     </ul>
   </div>
 </template>
@@ -18,8 +21,11 @@ export default {
   methods: {
     dragStart(e) {
       let componentName = e.target.getAttribute("data-name");
+      //获取组件默认数据
+      var dataAll = require('./modules/' + componentName + '/' + componentName + '.json')
       let info = {
-        name: componentName
+        name: componentName,
+        data: dataAll
       };
       e.dataTransfer.effectAllowed = "copy";
       e.dataTransfer.setData("info", JSON.stringify(info));
