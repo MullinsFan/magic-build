@@ -1,6 +1,6 @@
 # magic-build  
 
-> 页面搭建助手
+> 页面搭建助手 
 
 ## Build Setup
 
