@@ -13,3 +13,6 @@ export const currentComponent = {
 export const pageData = {
   components: []
 }
+
+// //控制表格显示
+// export const showTable = false
