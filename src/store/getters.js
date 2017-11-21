@@ -10,3 +10,7 @@ export const currentComponent = state => {
 export const pageData = state => {
   return state.pageData
 }
+
+// export const showTable = state => {
+//   return state.showTable
+// }

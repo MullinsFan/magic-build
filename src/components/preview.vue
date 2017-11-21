@@ -19,7 +19,8 @@ import modules from "./modules";
 export default {
   data() {
     return {
-      components: this.$store.state.pageData.components
+      components: this.$store.state.pageData.components,
+      dataAll: null,
     };
   },
   methods: {
@@ -34,7 +35,7 @@ export default {
         // 模块数据
         data: data
       });
-      console.log(this.$store.state.pageData.components[0].name)
+      //schema数据存入本地
     },
 
     dragOver(e) {
@@ -50,9 +51,12 @@ export default {
 
     handleClick(e) {
       let index = findIndex(e.target);
-      console.log(index)
       let name = this.components[index].name;
       this.$store.commit("SET_CURRENT_COMPONENT", { index, name });
+      //引入组件相应的schema文件
+      this.dataAll = require('./modules/' + name + '/' + name + 'schema.json')
+      let res = JSON.parse(localStorage.getItem('\''+name+'\''))
+      //递归查找index
       function findIndex(element) {
         let index = element.dataset.index
         if(index === undefined) {
