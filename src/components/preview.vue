@@ -22,7 +22,6 @@
 
 <script>
 import modules from "./modules"
-// import {mapActions} from 'vuex'
 export default {
   data() {
     return {
@@ -62,11 +61,8 @@ export default {
         if (!currentIndex || currentIndex === dragIndex) return
         console.log('currentIndex', currentIndex)
         console.log('drag Item', dragIndex)
+        // 重新排序
         this.$store.commit("SORT_COMPONENTS_GLOBEL", { currentIndex, dragIndex })
-        // let arr = this.lists.concat([])
-        // let temp = arr.splice(dragIndex, 1)
-        // arr.splice(currentItem, 0, temp[0])
-        // this.lists = arr
       }
     },
 
