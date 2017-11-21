@@ -1,10 +1,16 @@
 <template>
   <div class="wrap">
       <div class="mobile">
-        <div class="container" ref="preview" @drop="drop" @dragover="dragOver" @dragenter="dragEnter" @click="handleClick">
-          <div 
+        <div class="container" ref="preview"
+            @dragstart="moveItem"
+            @drop="drop"
+            @dragover="dragOver"
+            @dragenter="dragEnter"
+            @dragend="dragEnd"
+            @click="handleClick">
+          <div draggable="true"
           v-for="(item,index) in components"
-          :data-index=index
+          :data-index="index"
           :key="index"
           :is="item.name"
           :data="item.data"
@@ -15,7 +21,8 @@
 </template>
 
 <script>
-import modules from "./modules";
+import modules from "./modules"
+// import {mapActions} from 'vuex'
 export default {
   data() {
     return {
@@ -24,18 +31,43 @@ export default {
     };
   },
   methods: {
+    moveItem (e) {
+      let el = e.target
+      // 获取拖拽模块index并存储
+      let elIndex = el.dataset.index
+      e.dataTransfer.setData('itemIndex', elIndex)
+    },
     drop(e) {
       // 放下拖拽元素操作
-      let { name, data } = JSON.parse(e.dataTransfer.getData("info"));
-      console.log("name:",name)
-      console.table("data:",data)
-      this.$store.commit("SET_COMPONENTS", {
-        // 模块名称
-        name,
-        // 模块数据
-        data: data
-      });
-      //schema数据存入本地
+      let addFlag = e.dataTransfer.getData('addFlag')
+      if (addFlag) {
+        let { name, data } = JSON.parse(e.dataTransfer.getData("info"));
+        console.log("name:",name)
+        console.table("data:",data)
+        this.$store.commit("SET_COMPONENTS", {
+          // 模块名称
+          name,
+          // 模块数据
+          data: data
+        });
+        //schema数据存入本地
+      } else {
+        // 解决拖到空白地方报错
+        if (e.target === e.currentTarget) return
+        // 获取当前组件index
+        let currentIndex = this.findIndex(e.target)
+        // 获取拖拽组件index
+        let dragIndex = e.dataTransfer.getData('itemIndex')
+        // 若拖到相同组件则不改变组件顺序
+        if (!currentIndex || currentIndex === dragIndex) return
+        console.log('currentIndex', currentIndex)
+        console.log('drag Item', dragIndex)
+        this.$store.commit("SORT_COMPONENTS_GLOBEL", { currentIndex, dragIndex })
+        // let arr = this.lists.concat([])
+        // let temp = arr.splice(dragIndex, 1)
+        // arr.splice(currentItem, 0, temp[0])
+        // this.lists = arr
+      }
     },
 
     dragOver(e) {
@@ -49,21 +81,28 @@ export default {
       return true;
     },
 
+    dragEnd(e) {
+      // 清除flag, 避免影响移动组件
+      e.dataTransfer.clearData('addFlag')
+      return false;
+    },
+
     handleClick(e) {
-      let index = findIndex(e.target);
+      if (e.target === e.currentTarget) return
+      let index = this.findIndex(e.target);
       let name = this.components[index].name;
       this.$store.commit("SET_CURRENT_COMPONENT", { index, name });
       //引入组件相应的schema文件
       this.dataAll = require('./modules/' + name + '/' + name + 'schema.json')
       let res = JSON.parse(localStorage.getItem('\''+name+'\''))
-      //递归查找index
-      function findIndex(element) {
-        let index = element.dataset.index
-        if(index === undefined) {
-          return findIndex(element.parentElement)
-        } else {
-          return index
-        }
+    },
+    //递归查找index
+    findIndex(el) {
+      let index = el.dataset.index
+      if(typeof index === 'undefined') {
+        return this.findIndex(el.parentElement)
+      } else {
+        return index
       }
     }
   },
