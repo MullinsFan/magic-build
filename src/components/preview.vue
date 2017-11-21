@@ -27,7 +27,7 @@ export default {
       // 放下拖拽元素操作
       let { name, data } = JSON.parse(e.dataTransfer.getData("info"));
       console.log("name:",name)
-      console.log("data:",data)
+      console.table("data:",data)
       this.$store.commit("SET_COMPONENTS", {
         // 模块名称
         name,

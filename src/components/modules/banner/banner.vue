@@ -1,5 +1,5 @@
 <template>
-  <div class="header">
+  <div class="banner">
     <h1>{{ reData.name }}</h1>
     <div>{{ reData.speed }}</div>
   </div>
@@ -26,7 +26,7 @@ export default {
 
 
 <style lang="less" scoped>
-.header {
+.banner {
   width: 750px;
   height: 64px;
   color: #7e57c2;

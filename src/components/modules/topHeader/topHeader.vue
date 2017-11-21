@@ -1,5 +1,5 @@
 <template>
-  <div class="header">{{data.title}}</div>
+  <div class="topHeader">{{data.title}}</div>
 </template>
 
 <script>
@@ -17,7 +17,7 @@ export default {
 
 
 <style lang="less" scoped>
-.header {
+.topHeader {
   width: 750px;
   height: 64px;
   color: #7e57c2;

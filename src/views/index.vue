@@ -1,12 +1,14 @@
 <template>
     <div class="content">
-        <components></components>
-        <preview/>
-        <setting></setting>
+      <el-header/>
+      <components></components>
+      <preview/>
+      <setting></setting>
     </div>
 </template>
 
 <script>
+import elHeader from "@/components/Header";
 import preview from "../components/preview";
 import setting from "../components/setting";
 import components from "../components/components";
@@ -22,6 +24,7 @@ export default {
   },
   methods: {},
   components: {
+    elHeader,
     preview,
     setting,
     components
