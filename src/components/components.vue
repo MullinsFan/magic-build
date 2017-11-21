@@ -7,6 +7,9 @@
       <li draggable="true" @dragstart="dragStart" @dragend="dragEnd" data-name="banner">
           <banner></banner>
       </li>
+       <li draggable="true" @dragstart="dragStart" @dragend="dragEnd" data-name="list">
+          <list></list>
+      </li>
     </ul>
   </div>
 </template>
@@ -22,7 +25,7 @@ export default {
     dragStart(e) {
       let componentName = e.target.getAttribute("data-name");
       //获取组件默认数据
-      var dataAll = require('./modules/' + componentName + '/' + componentName + '.json')
+      let dataAll = require('./modules/' + componentName + '/' + componentName + '.json')
       let info = {
         name: componentName,
         data: dataAll
