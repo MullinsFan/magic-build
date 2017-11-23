@@ -1,21 +1,30 @@
 <template>
   <div class="wrap">
       <div class="mobile">
-        <div class="container" ref="preview" @drop="drop" @dragover="dragOver" @dragenter="dragEnter" @click="handleClick">
-          <div 
-          v-for="(item,index) in components"
-          :data-index=index
-          :key="index"
-          :is="item.name"
-          :data="item.data"
-          ></div>
+        <div class="container" ref="preview"
+            @dragstart="moveItem"
+            @drop="drop"
+            @dragover="dragOver"
+            @dragenter="dragEnter"
+            @dragend="dragEnd"
+            @click="handleClick">
+          <transition-group name="drag" tag="div">
+            <div draggable="true"
+            v-for="(item,index) in pageData.preComponentList"
+            :data-index="index"
+            :key="item.name"
+            :is="item.name"
+            :data="item.data"
+            ></div>
+          </transition-group>
         </div>
       </div>
   </div>
 </template>
 
 <script>
-import modules from "./modules";
+import modules from "./modules"
+import { mapGetters, mapActions } from 'vuex'
 export default {
   data() {
     return {
@@ -24,16 +33,47 @@ export default {
     };
   },
   methods: {
+    ...mapActions([
+      'sortComponents',
+      'setComponents',
+      'setCurrentComponent'
+    ]),
+    moveItem (e) {
+      const el = e.target
+      // 获取拖拽模块index并存储
+      let elIndex = el.dataset.index
+      e.dataTransfer.setData('itemIndex', elIndex)
+    },
     drop(e) {
       // 放下拖拽元素操作
-      let { name, data } = JSON.parse(e.dataTransfer.getData("info"));
-      this.$store.commit("SET_COMPONENTS", {
-        // 模块名称
-        name,
-        // 模块数据
-        data: data
-      });
-      //schema数据存入本地
+      let addFlag = e.dataTransfer.getData('addFlag')
+      // 判断是添加模块还是拖动模块
+      if (addFlag) {
+        let { name, data } = JSON.parse(e.dataTransfer.getData("info"));
+        console.log("name:",name)
+        console.table("data:",data)
+        this.setComponents({
+          // 模块名称
+          name,
+          // 模块数据
+          data: data
+        })
+        //schema数据存入本地
+      } else {
+        // 解决拖到空白地方报错
+        if (e.target === e.currentTarget) return
+        // 获取当前组件index
+        let currentIndex = this.findIndex(e.target)
+        // 获取拖拽组件index
+        let dragIndex = e.dataTransfer.getData('itemIndex')
+        // 若拖到相同组件则不改变组件顺序
+        if (!currentIndex || currentIndex === dragIndex) return
+        console.log('currentIndex', currentIndex)
+        console.log('drag Item', dragIndex)
+        // 重新排序
+        this.sortComponents({ currentIndex: currentIndex, dragIndex: dragIndex })
+        console.log('data', this.pageData)
+      }
     },
 
     dragOver(e) {
@@ -47,10 +87,17 @@ export default {
       return true;
     },
 
+    dragEnd(e) {
+      // 清除flag, 避免影响移动组件
+      e.dataTransfer.clearData('addFlag')
+      return false;
+    },
+
     handleClick(e) {
-      let index = findIndex(e.target);
-      let name = this.components[index].name;
-      this.$store.commit("SET_CURRENT_COMPONENT", { index, name });
+      if (e.target === e.currentTarget) return
+      let index = this.findIndex(e.target);
+      let name = this.pageData.preComponentList[index].name;
+      this.setCurrentComponent({ index, name })
       //引入组件相应的schema文件
       this.schemaData = require('./modules/' + name + '/' + name + 'schema.json')
       let res = JSON.parse(localStorage.getItem(`'${name}'`))
@@ -65,6 +112,11 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapGetters([
+      'pageData'
+    ])
+  },
   components: {
     ...modules
   }
@@ -73,6 +125,11 @@ export default {
 
 
 <style lang="less" scoped>
+/* 动画 */
+.drag-move {
+  transition: transform .6s;
+}
+
 .wrap {
   flex: 1;
   box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.117647);
@@ -85,9 +142,8 @@ export default {
   background: url("~@/assets/image/bgiphone.png") no-repeat;
   .container {
     border: 1px #ccc solid;
-    width: 750px;
-    height: 1255px;
-    transform: scale(0.448, 0.448) translate(-463px, -774px);
+    width: 335px;
+    height: 100%;
     overflow-y: scroll;
     &::-webkit-scrollbar {
       width: 5px;

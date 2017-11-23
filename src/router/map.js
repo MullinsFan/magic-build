@@ -8,4 +8,9 @@ export default [{
   name: '404',
   meta: {},
   component: resolve => require(['../views/errorPage/404'], resolve)
+},{
+	path: '/previewPage',
+  name: '预发布',
+  meta: {},
+  component: resolve => require(['../views/previewPage'], resolve)
 }]

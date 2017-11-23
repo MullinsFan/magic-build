@@ -1,11 +1,14 @@
 <template>
   <div class="wrap">
-    <ul class="m-components-list">
-      <li draggable="true" @dragstart="dragStart" @dragend="dragEnd" data-name="topHeader">
+    <ul class="m-components-list" @dragstart="dragStart" @dragend="dragEnd">
+      <li draggable="true" data-name="topHeader">
           <top-header />
       </li>
-      <li draggable="true" @dragstart="dragStart" @dragend="dragEnd" data-name="banner">
+      <li draggable="true" data-name="banner">
           <banner></banner>
+      </li>
+       <li draggable="true" data-name="list">
+          <list></list>
       </li>
     </ul>
   </div>
@@ -20,7 +23,10 @@ export default {
   },
   methods: {
     dragStart(e) {
-      let componentName = e.target.getAttribute("data-name");
+      let tar = e.target
+      // 设置添加flag
+      e.dataTransfer.setData('addFlag', true)
+      let componentName = tar.getAttribute("data-name");
       //获取组件默认数据
       let compData = require('./modules/' + componentName + '/' + componentName + '.json')
       let info = {
@@ -30,7 +36,7 @@ export default {
       e.dataTransfer.effectAllowed = "copy";
       e.dataTransfer.setData("info", JSON.stringify(info));
       // 设置拖拽过程中元素样式
-      let target = this.scaleEle(e.target);
+      let target = this.scaleEle(tar);
       e.dataTransfer.setDragImage(target, 0, 10);
     },
     scaleEle(target) {
@@ -64,6 +70,8 @@ export default {
       /*拖拽结束*/
       document.querySelector('#app').removeChild(document.querySelector('#_temp'))
       e.dataTransfer.clearData("info");
+      // 清除flag, 避免影响移动组件
+      e.dataTransfer.clearData('addFlag')
 
       return false;
     }
