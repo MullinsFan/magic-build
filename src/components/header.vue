@@ -12,12 +12,11 @@ import { mapGetters } from 'vuex'
 export default {
   data() {
     return {
-      page: this.$store.state.pageData.components
+      // page: this.$store.state.pageData.components
     };
   },
   methods: {
     prePublish () {
-      console.log(this.page)
       let url = '/previewPage'
       this.$router.push({
         path: url
