@@ -40,10 +40,11 @@ export default {
       return this.$store.state.pageData.components[index].data;
     },
     show() {
-      name = this.currentComponent.name
+      let name = this.currentComponent.name
       //取出本地存储的组件相应的shcema文件
-      let res = JSON.parse(localStorage.getItem('\'' + name +'\''))
+      let res = JSON.parse(localStorage.getItem(`'${name}'`))
       if(res == null) return false
+        
       this.result = res.properties
       
       return true
