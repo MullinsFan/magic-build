@@ -11,7 +11,7 @@
           <div draggable="true"
           v-for="(item,index) in components"
           :data-index="index"
-          :key="index"
+          :key="item.name"
           :is="item.name"
           :data="item.data"
           ></div>
@@ -22,6 +22,7 @@
 
 <script>
 import modules from "./modules"
+// import { mapGetters } from 'vuex'
 export default {
   data() {
     return {
@@ -31,7 +32,7 @@ export default {
   },
   methods: {
     moveItem (e) {
-      let el = e.target
+      const el = e.target
       // 获取拖拽模块index并存储
       let elIndex = el.dataset.index
       e.dataTransfer.setData('itemIndex', elIndex)
@@ -63,6 +64,7 @@ export default {
         console.log('drag Item', dragIndex)
         // 重新排序
         this.$store.commit("SORT_COMPONENTS_GLOBEL", { currentIndex, dragIndex })
+        console.log('data', this.components)
       }
     },
 

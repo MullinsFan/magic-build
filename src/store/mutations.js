@@ -25,12 +25,16 @@ export default {
   [types.SORT_COMPONENTS](state, payload) {
     let { currentIndex, dragIndex } = payload
     // 使用一个新数组重新排序后赋给原变量
+    // debugger
     let newArr = state.pageData.components.concat([])
-    console.log('arr', newArr)
+    console.log('newArr', newArr)
+    // 从原数组删除当前拖动模块，保存在temp内
     let temp = newArr.splice(dragIndex, 1)
     console.log('temp', temp)
+    // 将取出的模块，插入到当前模块后面
+    console.log('after splite', newArr)
     newArr.splice(currentIndex, 0, temp[0])
-    // console.log('-------------------------------')
     state.pageData.components = newArr
+    console.log('state.pageData.components', state.pageData.components)
   }
 }
