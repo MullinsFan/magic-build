@@ -50,9 +50,13 @@ export default {
       //取出本地存储的组件相应的shcema文件
       let res = JSON.parse(localStorage.getItem(`'${name}'`))
       if(res == null) return false
-        
+
       this.result = res.properties
-      
+      for(let x in vm.result) {
+        vm.data[x] = vm.result[x].val
+          console.log("items",vm.data[x])
+      }
+
       return true
     }
   },
