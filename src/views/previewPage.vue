@@ -8,8 +8,9 @@
 		<div class="mobile">
       <div class="container">
        <div 
-        v-for="(item,index) in components"
+        v-for="(item,index) in pageData.preComponentList"
         :is="item.name"
+				:key="item.name"
         ></div>
       </div>
     </div>
@@ -18,11 +19,12 @@
 
 <script>
 import modules from "../components/modules";
+import { mapGetters } from 'vuex'
 
 export default {
 	data () {
 		return {
-			components: this.$store.state.pageData.components
+			// components: this.$store.state.pageData.components
 		}
 	},
 
@@ -31,7 +33,11 @@ export default {
 			console.log('test')
 		}
 	},
-
+	computed: {
+    ...mapGetters([
+      'pageData'
+    ]),
+  },
 	components: {
     ...modules
   }

@@ -8,13 +8,15 @@
             @dragenter="dragEnter"
             @dragend="dragEnd"
             @click="handleClick">
-          <div draggable="true"
-          v-for="(item,index) in components"
-          :data-index="index"
-          :key="item.name"
-          :is="item.name"
-          :data="item.data"
-          ></div>
+          <transition-group name="drag" tag="div">
+            <div draggable="true"
+            v-for="(item,index) in pageData.preComponentList"
+            :data-index="index"
+            :key="item.name"
+            :is="item.name"
+            :data="item.data"
+            ></div>
+          </transition-group>
         </div>
       </div>
   </div>
@@ -22,15 +24,19 @@
 
 <script>
 import modules from "./modules"
-// import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 export default {
   data() {
     return {
-      components: this.$store.state.pageData.components,
       dataAll: null,
     };
   },
   methods: {
+    ...mapActions([
+      'sortComponents',
+      'setComponents',
+      'setCurrentComponent'
+    ]),
     moveItem (e) {
       const el = e.target
       // 获取拖拽模块index并存储
@@ -40,16 +46,17 @@ export default {
     drop(e) {
       // 放下拖拽元素操作
       let addFlag = e.dataTransfer.getData('addFlag')
+      // 判断是添加模块还是拖动模块
       if (addFlag) {
         let { name, data } = JSON.parse(e.dataTransfer.getData("info"));
         console.log("name:",name)
         console.table("data:",data)
-        this.$store.commit("SET_COMPONENTS", {
+        this.setComponents({
           // 模块名称
           name,
           // 模块数据
           data: data
-        });
+        })
         //schema数据存入本地
       } else {
         // 解决拖到空白地方报错
@@ -63,8 +70,8 @@ export default {
         console.log('currentIndex', currentIndex)
         console.log('drag Item', dragIndex)
         // 重新排序
-        this.$store.commit("SORT_COMPONENTS_GLOBEL", { currentIndex, dragIndex })
-        console.log('data', this.components)
+        this.sortComponents({ currentIndex: currentIndex, dragIndex: dragIndex })
+        console.log('data', this.pageData)
       }
     },
 
@@ -88,8 +95,8 @@ export default {
     handleClick(e) {
       if (e.target === e.currentTarget) return
       let index = this.findIndex(e.target);
-      let name = this.components[index].name;
-      this.$store.commit("SET_CURRENT_COMPONENT", { index, name });
+      let name = this.pageData.preComponentList[index].name;
+      this.setCurrentComponent({ index, name })
       //引入组件相应的schema文件
       this.dataAll = require('./modules/' + name + '/' + name + 'schema.json')
       let res = JSON.parse(localStorage.getItem('\''+name+'\''))
@@ -104,6 +111,11 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapGetters([
+      'pageData'
+    ])
+  },
   components: {
     ...modules
   }
@@ -112,6 +124,11 @@ export default {
 
 
 <style lang="less" scoped>
+/* 动画 */
+.drag-move {
+  transition: transform .6s;
+}
+
 .wrap {
   flex: 1;
   box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.117647);

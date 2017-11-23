@@ -46,19 +46,25 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex'
+
 export default {
 
   data() {
     return {
-      currentComponent: this.$store.state.currentComponent,
+      // currentComponent: this.$store.state.currentComponent,
       result: null
     };
   },
   computed: {
+    ...mapGetters([
+      'currentComponent',
+      'pageData'
+    ]),
     data() {
       let { index } = this.currentComponent;
       if (index === undefined) return "";
-      return this.$store.state.pageData.components[index].data;
+      return this.pageData.preComponentList[index].data;
     },
     show() {
       name = this.currentComponent.name
@@ -72,8 +78,11 @@ export default {
     }
   },
   methods: {
+    ...mapActions([
+      'setComponentsData'
+    ]),
     handleSubmit() {
-      this.$store.commit("SET_COMPONENTS_DATA", {
+      this.setComponentsData({
         index: this.currentComponent.index,
         data: this.data
       });

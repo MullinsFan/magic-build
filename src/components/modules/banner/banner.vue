@@ -31,5 +31,6 @@ export default {
   height: 64px;
   color: #7e57c2;
   background-color: #acf;
+  margin: 4px 0;
 }
 </style>

@@ -7,6 +7,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   data() {
     return {
@@ -21,6 +23,11 @@ export default {
         path: url
       })
     }
+  },
+  computed: {
+    ...mapGetters([
+      'pageData'
+    ]),
   }
 };
 </script>
