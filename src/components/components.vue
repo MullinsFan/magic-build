@@ -22,10 +22,10 @@ export default {
     dragStart(e) {
       let componentName = e.target.getAttribute("data-name");
       //获取组件默认数据
-      var dataAll = require('./modules/' + componentName + '/' + componentName + '.json')
+      let compData = require('./modules/' + componentName + '/' + componentName + '.json')
       let info = {
         name: componentName,
-        data: dataAll
+        data: compData
       };
       e.dataTransfer.effectAllowed = "copy";
       e.dataTransfer.setData("info", JSON.stringify(info));
@@ -42,19 +42,29 @@ export default {
       let $app = document.querySelector("#app");
       let node = target.cloneNode(true);
       node.id = '_temp'
-      node.style.listStyle = "none";
-      node.style.opacity = "1";
-      node.style.position = "fixed";
-      node.style.width = width * 0.448 + "px";
-      node.style.height = height * 0.448 + "px";
-      node.style.top = "-200000px";
+      Object.assigin(node.style,{
+        listStyle: "none",
+        opacity: "1",
+        position: "fixed",
+        width: width * 0.448 + "px",
+        height: height * 0.448 + "px",
+        top: "-200000px",
+      })
+      // node.style.listStyle = "none";
+      // node.style.opacity = "1";
+      // node.style.position = "fixed";
+      // node.style.width = width * 0.448 + "px";
+      // node.style.height = height * 0.448 + "px";
+      // node.style.top = "-200000px";
       $app.appendChild(node);
+
       return node;
     },
     dragEnd(e) {
       /*拖拽结束*/
       document.querySelector('#app').removeChild(document.querySelector('#_temp'))
       e.dataTransfer.clearData("info");
+
       return false;
     }
   },

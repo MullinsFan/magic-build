@@ -20,7 +20,7 @@ export default {
   data() {
     return {
       components: this.$store.state.pageData.components,
-      dataAll: null,
+      schemaData: null,
     };
   },
   methods: {
@@ -52,8 +52,8 @@ export default {
       let name = this.components[index].name;
       this.$store.commit("SET_CURRENT_COMPONENT", { index, name });
       //引入组件相应的schema文件
-      this.dataAll = require('./modules/' + name + '/' + name + 'schema.json')
-      let res = JSON.parse(localStorage.getItem('\''+name+'\''))
+      this.schemaData = require('./modules/' + name + '/' + name + 'schema.json')
+      let res = JSON.parse(localStorage.getItem(`'${name}'`))
       //递归查找index
       function findIndex(element) {
         let index = element.dataset.index

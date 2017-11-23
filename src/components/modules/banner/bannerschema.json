@@ -5,6 +5,7 @@
   "properties": {
     "page": {
       "title": "页数",
+      "val": "",
       "name": "page",
       "type": "integer",
       "default": 5,
@@ -12,6 +13,7 @@
     },
     "background_color": {
       "title": "背景颜色",
+      "val": "",
       "name": "background_color",
       "type": "string",
       "format": "color",
@@ -19,6 +21,7 @@
     },
     "speed": {
       "title": "轮播速度",
+      "val": "",
       "name": "speed",
       "type": "integer",
       "default": 3000,
@@ -26,6 +29,7 @@
     },
     "banners": {
       "title": "各banner信息",
+      "val": "",
       "name": "banners",
       "type": "array",
       "format": "table",
@@ -36,11 +40,13 @@
         "properties": {
           "src": {
             "title": "图片链接",
+            "val": "",
             "name": "src",
             "type": "string"
           },
           "title": {
             "title": "banner相关文字",
+            "val": "",
             "name": "title",
             "type": "string"
           }

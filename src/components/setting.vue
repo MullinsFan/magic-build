@@ -1,45 +1,25 @@
 <template>
   <div class="wrap">设置
-    <h1>{{data.name}}</h1>
-    <input v-model="data.name" placeholder="edit me">
     <div v-if = "show">
       <ul class="data">
-        <li v-for="item in result">
+        <li v-for="(item,index) in result" :key="index">
           <label>{{ item.title }}:</label>
-          <input type="" name="" v-if="!item.items">
+          <input v-model="item.val" type="" name="" v-if="!item.items">
           <table v-if="item.items">
               <tr>
-                <th v-for="secItem in item.items.properties">{{ secItem.title }}</th>
+                <th v-for="secItem in item.items.properties">
+                {{ secItem.title }}
+                </th>
               </tr>
               <tr>
-                <td v-for="secItem in item.items.properties">
-                  <input type="" name="item.name"  v-if="!secItem.items">
+                <td v-for="(secItem,index) in item.items.properties" :key="index">
+                  <input v-model="secItem.val" type="" name="item.name"  v-if="!secItem.items">
                 </td>
               </tr>
             </table>
         </li>
       </ul>
     </div>
-    <!-- <table v-if = "show">
-        <tr>
-          <th v-for="item in result">{{ item.title }}</th>
-        </tr>
-        <tr>
-          <td v-for="item in result">
-           <input type="" name="" v-if="!item.items">
-           <table v-if="item.items">
-              <tr>
-                <th v-for="secItem in item.items.properties">{{ secItem.title }}</th>
-              </tr>
-              <tr>
-                <td v-for="secItem in item.items.properties">
-                  <input type="" name="item.name"  v-if="!secItem.items">
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-      </table> -->
 
     <button @click="handleSubmit">保存</button>
   </div>
@@ -47,11 +27,10 @@
 
 <script>
 export default {
-
   data() {
     return {
       currentComponent: this.$store.state.currentComponent,
-      result: null
+      result: null,
     };
   },
   computed: {
@@ -65,19 +44,23 @@ export default {
       //取出本地存储的组件相应的shcema文件
       let res = JSON.parse(localStorage.getItem('\'' + name +'\''))
       if(res == null) return false
-      else {
-        this.result = res.properties
-        return true
-      }
+      this.result = res.properties
+      
+      return true
     }
   },
   methods: {
     handleSubmit() {
-      this.$store.commit("SET_COMPONENTS_DATA", {
-        index: this.currentComponent.index,
-        data: this.data
+      const vm = this
+      for(let x in vm.result) {
+        vm.data[x] = vm.result[x].val
+          console.log("items",vm.data[x])
+      }
+      console.log(vm.data)
+      vm.$store.commit("SET_COMPONENTS_DATA", {
+        index: vm.currentComponent.index,
+        data: vm.data
       });
-      // 存localstorage
     }
   }
 };
@@ -96,13 +79,18 @@ export default {
   li {
     margin-bottom: 8px;
   }
-  table {
-    border: 1px solid #000; 
+  table,th,td {
     margin-top: 10px;
     text-align: center;
   }
+  th,td {
+    border: 1px solid #000; 
+  }
   th {
-    padding: 2px;
+    padding: 3px;
+  }
+  input {
+    padding-left: 8px;
   }
 }
 </style>
