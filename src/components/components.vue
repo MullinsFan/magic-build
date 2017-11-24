@@ -48,7 +48,7 @@ export default {
       let $app = document.querySelector("#app");
       let node = target.cloneNode(true);
       node.id = '_temp'
-      Object.assigin(node.style,{
+      Object.assign(node.style,{
         listStyle: "none",
         opacity: "1",
         position: "fixed",

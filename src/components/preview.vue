@@ -101,14 +101,14 @@ export default {
       //引入组件相应的schema文件
       this.schemaData = require('./modules/' + name + '/' + name + 'schema.json')
       let res = JSON.parse(localStorage.getItem(`'${name}'`))
-      //递归查找index
-      function findIndex(element) {
-        let index = element.dataset.index
-        if(index === undefined) {
-          return findIndex(element.parentElement)
-        } else {
-          return index
-        }
+    },
+    //递归查找index
+    findIndex(element) {
+      let index = element.dataset.index
+      if(index === undefined) {
+        return this.findIndex(element.parentElement)
+      } else {
+        return index
       }
     }
   },
