@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "banner",
+  "type": "object",
+  "properties": {
+    "title": {
+  		"title": "名字",
+  		"val": "",
+  		"name": "name",
+      "type": "string",
+      "default": "内容"
+  	},
+    "name": {
+  		"title": "名字",
+  		"val": "",
+  		"name": "name",
+      "type": "string",
+      "default": "内容"
+  	}
+  }
+}

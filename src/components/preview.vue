@@ -75,32 +75,28 @@ export default {
         console.log('data', this.pageData)
       }
     },
-
     dragOver(e) {
       /*拖拽元素在目标元素头上移动的时候*/
       e.preventDefault();
       return true;
     },
-
     dragEnter(e) {
       /*拖拽元素进入目标元素头上的时候*/
       return true;
     },
-
     dragEnd(e) {
       // 清除flag, 避免影响移动组件
       e.dataTransfer.clearData('addFlag')
       return false;
     },
-
     handleClick(e) {
       if (e.target === e.currentTarget) return
       let index = this.findIndex(e.target);
       let name = this.pageData.preComponentList[index].name;
       this.setCurrentComponent({ index, name })
-      //引入组件相应的schema文件
+      //引入组件相应的schema文件,存入本地
       this.schemaData = require('./modules/' + name + '/' + name + 'schema.json')
-      let res = JSON.parse(localStorage.getItem(`'${name}'`))
+      localStorage.setItem(`'${name}'`, JSON.stringify(this.schemaData))
     },
     //递归查找index
     findIndex(element) {
@@ -129,7 +125,6 @@ export default {
 .drag-move {
   transition: transform .6s;
 }
-
 .wrap {
   flex: 1;
   box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.117647);
@@ -172,4 +167,3 @@ export default {
   }
 }
 </style>
-
