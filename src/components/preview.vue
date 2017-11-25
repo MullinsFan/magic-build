@@ -142,8 +142,9 @@ export default {
   background: url("~@/assets/image/bgiphone.png") no-repeat;
   .container {
     border: 1px #ccc solid;
-    width: 335px;
-    height: 100%;
+    width: 750px;
+    height: 1255px;
+    transform: scale(0.448, 0.448) translate(-463px, -774px);
     overflow-y: scroll;
     &::-webkit-scrollbar {
       width: 5px;
