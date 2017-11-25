@@ -63,7 +63,6 @@ export default {
       // node.style.height = height * 0.448 + "px";
       // node.style.top = "-200000px";
       $app.appendChild(node);
-
       return node;
     },
     dragEnd(e) {
@@ -72,7 +71,6 @@ export default {
       e.dataTransfer.clearData("info");
       // 清除flag, 避免影响移动组件
       e.dataTransfer.clearData('addFlag')
-
       return false;
     }
   },
@@ -114,5 +112,3 @@ export default {
   }
 }
 </style>
-
-
