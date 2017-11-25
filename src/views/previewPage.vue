@@ -8,7 +8,7 @@
 		<div class="mobile">
       <div class="container">
        <div 
-        v-for="(item,index) in pageData.preComponentList"
+        v-for="(item,index) in componentsList"
         :is="item.name"
 				:key="item.name"
         ></div>
@@ -20,16 +20,38 @@
 <script>
 import modules from "../components/modules";
 import { mapGetters } from 'vuex'
+import axios from 'axios'
 
 export default {
 	data () {
 		return {
-			// components: this.$store.state.pageData.components
+			componentsList: []
 		}
+	},
+
+	created () {
+		this.componentsList = this.pageData.preComponentList
 	},
 
 	methods: {
 		publish () {
+			console.log("list:", this.componentsList)
+			let componentListName = Date.parse(new Date());
+			console.log("componentListName: ",componentListName + "  " + new Date());
+			let reqData = this.componentsList
+			console.log("reqData:", this.componentsList);
+			let url = '?id=' + componentListName + '&data=' + reqData;
+			let resUrl = '';
+			axios.post(url)
+			.then((res) => {
+				console.log("res", res.data);
+				this.resUrl = res.data.url;
+			})
+			.catch((err) => {
+
+			})
+			// 返回发布后的网页地址
+			// 跳转新blank
 			console.log('test')
 		}
 	},
