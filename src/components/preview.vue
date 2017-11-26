@@ -58,7 +58,6 @@ export default {
           // 模块数据
           data: data
         })
-        //schema数据存入本地
       } else {
         // 解决拖到空白地方报错
         if (e.target === e.currentTarget) return

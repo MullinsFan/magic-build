@@ -1,14 +1,21 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "banner",
+  "title": "list",
   "type": "object",
   "properties": {
+    "url": {
+      "title": "图片链接",
+      "val": "",
+      "name": "url",
+      "type": "string",
+      "default": "url"
+    },
     "title": {
-  		"title": "名字",
+  		"title": "标题",
   		"val": "",
   		"name": "name",
       "type": "string",
-      "default": "内容"
+      "default": "123"
   	},
     "name": {
   		"title": "名字",

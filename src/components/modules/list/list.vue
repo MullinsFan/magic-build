@@ -1,31 +1,27 @@
 <template>
 
 	<div class="list" >
-		<img class="listImg" src="url">
+		<img class="listImg" :src="data.url">
 		<div>
 			<div>{{ data.title }}</div>
-			<div>{{ data.cnotent }}</div>
+			<div>{{ data.name }}</div>
 		</div>
 
 	</div>
 </template>
 
 <script>
+import deData from "./list.json";
 export default {
-	props: {
-		type: Object,
-		data: {
-			default () {
-				return {
-					url:'',
-					title: "list",
-					cnotent: "ffffffffffffff"
-				}
-			}
-		}
-	}
-	
-}
+  props: {
+    data: {
+      type: Object,
+      default() {
+        return deData;
+      }
+    }
+  }
+};
 </script>
 
 <style lang="less" scoped>

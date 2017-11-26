@@ -4,7 +4,7 @@
       <ul class="data">
         <li v-for="(item,index) in result" :key="index">
           <label>{{ item.title }}:</label>
-          <input v-model="item.val" type="" name="" v-if="!item.items">
+          <input v-model="item.val" placeholder="请填写" v-if="!item.items">
           <table v-if="item.items">
               <tr>
                 <th v-for="secItem in item.items.properties" @lick="addItems" >
@@ -14,7 +14,7 @@
 
               <tr v-for="(secs,index) in secRes" :key="index">
                 <td v-for="(secitem,index) in secs" :key="index">
-                  <input v-model="secitem.val" type="" name=""  v-if="!secitem.items">
+                  <input v-model="secitem.val" placeholder="请填写" v-if="!secitem.items">
                 </td>
               </tr>
 
@@ -85,12 +85,14 @@ export default {
       return this.pageData.preComponentList[index].data;
     },
     show() {
+      console.log("show")
       const vm = this
       let name = vm.currentComponent.name
       //取出本地存储的组件相应的shcema文件
       let res = JSON.parse(localStorage.getItem(`'${name}'`))
       if(res == null) return false
-
+      console.log("show========")
+      localStorage.setItem(`'${name}'`, JSON.stringify(res))
       vm.result = res.properties
       if(vm.once) {
         for(let x in vm.result) {
@@ -119,6 +121,7 @@ export default {
       'setComponentsData'
     ]),
     addItems() {
+
       const vm = this
       vm.count = vm.count + 1
       vm.secRes = []
@@ -130,7 +133,6 @@ export default {
     handleSubmit() {
       const vm = this
       for(let x in vm.result) {
-        console.log("x",x,typeof vm.data[x])
         if(vm.result[x].type === "array" && typeof vm.data[x] == "object") {
           //存储二级对象数据
           let item = vm.data[x]
@@ -139,29 +141,28 @@ export default {
             vm.data[x].push(item)
             for (let n = 0; n < vm.secItems.length; n++) {
               let name = vm.secItems[n].name
-              if(typeof vm.secRes[m][n].val === "undefined") {
-                alert("请填写" + vm.secRes[m][n].title)
-                return ""
-              }
+              // if(vm.secRes[m][n].val < 1) {
+              //   alert("请填写" + vm.secRes[m][n].title)
+              //   return ""
+              // }
               vm.data[x][m][name] = vm.secRes[m][n].val
             }
           }
         }
 
         else {
-          if(typeof vm.result[x].val === "undefined") {
-            alert("请填写" + vm.result[x].title)
-                return ""
-          }
+          // if(vm.result[x].val < 1) {
+          //   alert("请填写" + vm.result[x].title)
+          //    return ""
+          // }
           vm.data[x] = vm.result[x].val
-          console.log("y",x,typeof vm.data[x])
         }    
       }
 
       vm.setComponentsData({
         index: vm.currentComponent.index,
         data: vm.data
-      });
+      })
     }
   }
 };
@@ -207,6 +208,7 @@ export default {
     padding: 3px;
   }
   input {
+    color: #000;
     padding-left: 8px;
   }
   //添加定位

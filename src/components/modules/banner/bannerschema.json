@@ -33,7 +33,7 @@
       "name": "banners",
       "type": "array",
       "format": "table",
-      "minItems": "1",
+      "minItems": 1,
       "items": {
         "type": "object",
         "title": "单个banner信息",
