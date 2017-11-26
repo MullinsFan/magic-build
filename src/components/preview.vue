@@ -45,6 +45,7 @@ export default {
       e.dataTransfer.setData('itemIndex', elIndex)
     },
     drop(e) {
+      console.log("components",this.components)
       // 放下拖拽元素操作
       let addFlag = e.dataTransfer.getData('addFlag')
       // 判断是添加模块还是拖动模块

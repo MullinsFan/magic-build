@@ -188,7 +188,7 @@ export default {
 }
 .wrap {
   position: relative;
-  width: 380px;
+  width: 360px;
   background-color: #ede7f6;
 }
 .data {
@@ -208,6 +208,7 @@ export default {
     padding: 3px;
   }
   input {
+    width: 150px;
     color: #000;
     padding-left: 8px;
   }
