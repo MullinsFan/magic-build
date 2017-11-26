@@ -28,7 +28,6 @@ import { mapGetters, mapActions } from 'vuex'
 export default {
   data() {
     return {
-      components: this.$store.state.pageData.components,
       schemaData: null,
     };
   },
@@ -49,14 +48,17 @@ export default {
       let addFlag = e.dataTransfer.getData('addFlag')
       // 判断是添加模块还是拖动模块
       if (addFlag) {
-        let { name, data } = JSON.parse(e.dataTransfer.getData("info"));
-        console.log("name:",name)
-        console.table("data:",data)
+        let { name, data, id } = JSON.parse(e.dataTransfer.getData("info"));
+        // console.log("name:",name)
+        // console.table("data:",data)
+        // console.log('id', id)
         this.setComponents({
           // 模块名称
           name,
           // 模块数据
-          data: data
+          data: data,
+          // 模块id
+          id: id,
         })
       } else {
         // 解决拖到空白地方报错
@@ -90,8 +92,9 @@ export default {
     },
     handleClick(e) {
       if (e.target === e.currentTarget) return
-      let index = this.findIndex(e.target);
-      let name = this.pageData.preComponentList[index].name;
+      let index = this.findIndex(e.target)
+      let name = this.pageData.preComponentList[index].name
+      let id = this.pageData.preComponentList[index].id
       this.setCurrentComponent({ index, name })
       //引入组件相应的schema文件,存入本地
       this.schemaData = require('./modules/' + name + '/' + name + 'schema.json')

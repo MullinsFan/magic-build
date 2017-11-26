@@ -29,9 +29,12 @@ export default {
       let componentName = tar.getAttribute("data-name");
       //获取组件默认数据
       let compData = require('./modules/' + componentName + '/' + componentName + '.json')
+      let guid = this.guid()
+      console.log('guid', guid)
       let info = {
         name: componentName,
-        data: compData
+        data: compData,
+        id: guid
       };
       e.dataTransfer.effectAllowed = "copy";
       e.dataTransfer.setData("info", JSON.stringify(info));
@@ -72,6 +75,12 @@ export default {
       // 清除flag, 避免影响移动组件
       e.dataTransfer.clearData('addFlag')
       return false;
+    },
+    guid () {
+      function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+      }
+      return s4() + s4() + '-' + s4()
     }
   },
   components: {
