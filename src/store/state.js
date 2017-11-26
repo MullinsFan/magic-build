@@ -5,7 +5,8 @@
 const state = {
   currentComponent: {
     name: undefined,
-    index: undefined
+    index: undefined,
+    id: undefined
   },
   pageData: {
     preComponentList: []
