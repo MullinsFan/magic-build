@@ -36,11 +36,11 @@ export default {
 	methods: {
 		publish () {
 			console.log("list:", this.componentsList)
-			let componentListName = Date.parse(new Date());
-			console.log("componentListName: ",componentListName + "  " + new Date());
+			let componentListId = Date.parse(new Date());
+			console.log("componentListId: ",componentListId + "  " + new Date());
 			let reqData = this.componentsList
-			console.log("reqData:", this.componentsList);
-			let url = '?id=' + componentListName + '&data=' + reqData;
+			console.log("reqData:", reqData);
+			let url = '?id=' + componentListId + '&data=' + reqData;
 			let resUrl = '';
 			axios.post(url)
 			.then((res) => {
