@@ -12,6 +12,7 @@
             <div draggable="true"
             v-for="(item,index) in pageData.preComponentList"
             :data-index="index"
+            :data-id="item.id"
             :key="item.name"
             :is="item.name"
             :data="item.data"
