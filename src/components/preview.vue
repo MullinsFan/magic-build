@@ -28,7 +28,6 @@ import { mapGetters, mapActions } from 'vuex'
 export default {
   data() {
     return {
-      components: this.$store.state.pageData.components,
       schemaData: null,
     };
   },

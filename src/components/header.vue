@@ -12,15 +12,26 @@ import { mapGetters } from 'vuex'
 export default {
   data() {
     return {
-      // page: this.$store.state.pageData.components
     };
   },
   methods: {
     prePublish () {
-      let url = '/previewPage'
+      let id = this.guid();
+      console.log("随机id: ", id)
+      let url = '/previewPage/' + id
       this.$router.push({
         path: url
       })
+    },
+
+    // 为整个组件数组随机生产Id
+    guid ()  { 
+      function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substring(1);
+      }
+      return s4() + s4() + s4()
     }
   },
   computed: {
