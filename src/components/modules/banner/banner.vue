@@ -1,18 +1,13 @@
 <template>
   <div class="banner">
-    <h1>{{ reData.name }}</h1>
-    <div>{{ reData.speed }}</div>
+    <h1>{{ data.name }}</h1>
+    <div>{{ data.speed }}</div>
   </div>
 </template>
 
 <script>
 import deData from "./banner.json";
 export default {
-  data() {
-    return {
-      reData: deData
-    };
-  },
   props: {
     data: {
       type: Object,
