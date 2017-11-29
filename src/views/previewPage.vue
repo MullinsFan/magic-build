@@ -11,7 +11,9 @@
         v-for="(item,index) in componentsList"
         :is="item.name"
 				:key="item.name"
+				 :data="item.data"
         ></div>
+
       </div>
     </div>
 	</div>
@@ -29,23 +31,34 @@ export default {
 		}
 	},
 
+	computed: {
+    ...mapGetters([
+      'pageData'
+    ])
+  },
+
 	created () {
 		this.componentsList = this.pageData.preComponentList
 	},
 
+	components: {
+    ...modules
+  },
+
 	methods: {
 		publish () {
-			console.log("list:", this.componentsList)
-			let componentListName = Date.parse(new Date());
-			console.log("componentListName: ",componentListName + "  " + new Date());
-			let reqData = this.componentsList
-			console.log("reqData:", this.componentsList);
-			let url = '?id=' + componentListName + '&data=' + reqData;
+			let _this = this;
+			// 获取地址栏数组id
+			let componentListId = _this.$route.params.id;
+			console.log("componentListId: ",componentListId + "  " + new Date());
+			let reqData = _this.componentsList
+			console.log("reqData:", reqData);
+			let url = '?id=' + componentListId + '&data=' + reqData;
 			let resUrl = '';
 			axios.post(url)
 			.then((res) => {
 				console.log("res", res.data);
-				this.resUrl = res.data.url;
+				// _this.resUrl = res.data.url;
 			})
 			.catch((err) => {
 
@@ -54,15 +67,7 @@ export default {
 			// 跳转新blank
 			console.log('test')
 		}
-	},
-	computed: {
-    ...mapGetters([
-      'pageData'
-    ]),
-  },
-	components: {
-    ...modules
-  }
+	}
 }
 
 </script>
