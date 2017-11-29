@@ -97,10 +97,11 @@ export default {
       let index = this.findIndex(e.target)
       let name = this.pageData.preComponentList[index].name
       let id = this.pageData.preComponentList[index].id
-      this.setCurrentComponent({ index, name })
+      this.setCurrentComponent({ index, name, id })
       //引入组件相应的schema文件,存入本地
       this.schemaData = require('./modules/' + name + '/' + name + 'schema.json')
-      localStorage.setItem(`'${name}'`, JSON.stringify(this.schemaData))
+      localStorage.setItem(`'${name}'` + id , JSON.stringify(this.schemaData))
+      //触发show
     },
     //递归查找index
     findIndex(element) {

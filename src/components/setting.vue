@@ -1,11 +1,12 @@
 <template>
   <div class="wrap">设置
+
     <div v-if = "show">
       <ul class="data">
         <li v-for="(item,index) in result" :key="index">
           <label>{{ item.title }}:</label>
           <input v-model="item.val" placeholder="请填写" v-if="!item.items">
-          <table v-if="item.items">
+          <table v-if = "item.items">
               <tr>
                 <th v-for="secItem in item.items.properties" @lick="addItems" >
                 {{ secItem.title }}
@@ -14,17 +15,20 @@
 
               <tr v-for="(secs,index) in secRes" :key="index">
                 <td v-for="(secitem,index) in secs" :key="index">
-                  <input v-model="secitem.val" placeholder="请填写" v-if="!secitem.items">
+                  <input v-model="secitem.val" placeholder="请填写" >
+                  <!-- <input v-model="secitem.val" placeholder="请填写" v-if="!secitem.items"> -->
                 </td>
               </tr>
 
               <i class="iconfont add" @click="addItems" >&#xe602;</i>
+              <i class="iconfont del" @click="delItems" >&#xe612;</i>
             </table>
         </li>
       </ul>
     </div>
-
+    <input type="file" name="">
     <button @click="handleSubmit">保存</button>
+    <button @click="clearData">清除所有数据</button>
   </div>
 </template>
 
@@ -71,7 +75,8 @@ export default {
       once: true,
       secRes: [],
       secItems: [],
-      count: null,
+      count: {},//存储不同组件的count
+      id: null,
     };
   },
   computed: {
@@ -85,50 +90,63 @@ export default {
       return this.pageData.preComponentList[index].data;
     },
     show() {
-      console.log("show")
       const vm = this
       let name = vm.currentComponent.name
+      vm.id = vm.currentComponent.id
       //取出本地存储的组件相应的shcema文件
-      let res = JSON.parse(localStorage.getItem(`'${name}'`))
+      let res = JSON.parse(localStorage.getItem(`'${name}'` + vm.id))
       if(res == null) return false
-      console.log("show========")
-      localStorage.setItem(`'${name}'`, JSON.stringify(res))
+      // localStorage.setItem(`'${name}'` + id, JSON.stringify(res))
+      
       vm.result = res.properties
-      if(vm.once) {
-        for(let x in vm.result) {
-          if(vm.result[x].type === "array") {
-            //将二级数据转换成数组
-            let sec = vm.result[x].items.properties
-            vm.count = vm.result[x].minItems
-            for(let y in sec) {
-              let item = cloneDeep(sec[y])
-              vm.secItems.push(item)
-            }
-            for(let m = 0; m < vm.count ; m++) {
-              let secItems = cloneDeep(vm.secItems)
-              vm.secRes.push(secItems)
-            }
-          }
-        }
-        vm.once = false
-      }
+      vm.showTable()
 
       return true
-    }
+    },
   },
   methods: {
     ...mapActions([
       'setComponentsData'
     ]),
-    addItems() {
-
+    showTable() {
       const vm = this
-      vm.count = vm.count + 1
-      vm.secRes = []
-      for(let m = 0; m < vm.count ; m++) {
-        let secItems = cloneDeep(vm.secItems)
-        vm.secRes.push(secItems)
+      for(let x in vm.result) {
+        if(vm.result[x].type === "array") {
+          //将二级数据转换成数组
+          let sec = vm.result[x].items.properties
+          let id = vm.id
+          if(vm.count[id] === undefined) {
+            vm.count[id] = vm.result[x].minItems
+          }
+          vm.secItems = []
+          vm.secRes = []
+          for(let y in sec) {
+            let item = cloneDeep(sec[y])
+            vm.secItems.push(item)
+          }
+          for(let m = 0; m < vm.count[id] ; m++) {
+            let secItems = cloneDeep(vm.secItems)
+            vm.secRes.push(secItems)
+          }
+        }
       }
+    },
+    delItems() {
+      const vm = this
+      let id = vm.id
+      if(vm.count[id] > 1) {
+        vm.count[id] = vm.count[id] - 1 
+        vm.showTable()
+      }
+    },
+    addItems() {
+      const vm = this
+      let id = vm.id
+        vm.count[id] = vm.count[id] + 1 
+        vm.showTable()
+    },
+    clearData() {
+      localStorage.clear()
     },
     handleSubmit() {
       const vm = this
@@ -171,12 +189,12 @@ export default {
 
 <style lang="less" scoped>
 @font-face {
-  font-family: 'iconfont';  /* project id 487135 */
-  src: url('//at.alicdn.com/t/font_487135_jh39b4ymp3xlayvi.eot');
-  src: url('//at.alicdn.com/t/font_487135_jh39b4ymp3xlayvi.eot?#iefix') format('embedded-opentype'),
-  url('//at.alicdn.com/t/font_487135_jh39b4ymp3xlayvi.woff') format('woff'),
-  url('//at.alicdn.com/t/font_487135_jh39b4ymp3xlayvi.ttf') format('truetype'),
-  url('//at.alicdn.com/t/font_487135_jh39b4ymp3xlayvi.svg#iconfont') format('svg');
+  font-family: 'iconfont';  /* project id 487523 */
+  src: url('//at.alicdn.com/t/font_487523_v2i1buhqm730udi.eot');
+  src: url('//at.alicdn.com/t/font_487523_v2i1buhqm730udi.eot?#iefix') format('embedded-opentype'),
+  url('//at.alicdn.com/t/font_487523_v2i1buhqm730udi.woff') format('woff'),
+  url('//at.alicdn.com/t/font_487523_v2i1buhqm730udi.ttf') format('truetype'),
+  url('//at.alicdn.com/t/font_487523_v2i1buhqm730udi.svg#iconfont') format('svg');
 }
 .iconfont{
   font-family: "iconfont" !important;
@@ -215,8 +233,14 @@ export default {
   //添加定位
   .add {
     position: relative;
-    left: 50%;
+    left: 30%;
     top: -4px;
+    cursor: pointer;
+  }
+  .del {
+    position: relative;
+    left: 70%;
+    top: -2px;
     cursor: pointer;
   }
 }
