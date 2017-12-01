@@ -9,7 +9,7 @@ export default [{
   meta: {},
   component: resolve => require(['../views/errorPage/404'], resolve)
 },{
-	path: '/previewPage',
+	path: '/previewPage/:id',
   name: '预发布',
   meta: {},
   component: resolve => require(['../views/previewPage'], resolve)
