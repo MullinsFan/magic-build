@@ -70,16 +70,20 @@ export default {
         let dragIndex = e.dataTransfer.getData('itemIndex')
         // 若拖到相同组件则不改变组件顺序
         if (!currentIndex || currentIndex === dragIndex) return
-        console.log('currentIndex', currentIndex)
-        console.log('drag Item', dragIndex)
+        // console.log('currentIndex', currentIndex)
+        // console.log('drag Item', dragIndex)
         // 重新排序
         this.sortComponents({ currentIndex: currentIndex, dragIndex: dragIndex })
-        console.log('data', this.pageData)
+        // console.log('data', this.pageData)
       }
     },
     dragOver(e) {
       /*拖拽元素在目标元素头上移动的时候*/
       e.preventDefault();
+      // 处理 dataset of null 报错
+      if (e.target === e.currentTarget.children[0] || e.target === e.currentTarget) return
+      let currentIndex = this.findIndex(e.target)
+      console.log('current index', currentIndex)
       return true;
     },
     dragEnter(e) {
