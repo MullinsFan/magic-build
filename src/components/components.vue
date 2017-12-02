@@ -10,6 +10,9 @@
        <li draggable="true" data-name="list">
           <list></list>
       </li>
+      <li draggable="true" data-name="componentHolder">
+          <component-Holder></component-Holder>
+      </li>
     </ul>
   </div>
 </template>
@@ -30,7 +33,7 @@ export default {
       //获取组件默认数据
       let compData = require('./modules/' + componentName + '/' + componentName + '.json')
       let guid = this.guid()
-      console.log('guid', guid)
+      // console.log('guid', guid)
       let info = {
         name: componentName,
         data: compData,

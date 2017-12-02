@@ -4,8 +4,8 @@
 import * as types from './mutationTypes'
 
 const actions = {
-  setComponents: ({commit}, payload) => {
-    commit(types.SET_COMPONENTS, payload)
+  addComponents: ({commit}, payload) => {
+    commit(types.ADD_COMPONENTS, payload)
   },
   setComponentsData: ({commit}, payload) => {
     commit(types.SET_COMPONENTS_DATA, payload)
@@ -18,7 +18,16 @@ const actions = {
   },
   sortComponents: ({commit}, payload) => {
     commit(types.SORT_COMPONENTS_GLOBEL, payload)
+  },
+  
+  addComponentHolder: ({commit}, payload) => {
+    commit(types.ADD_COMPONNET_HOLDER_GLOBEL, payload)
+  },
+  
+  delComponentHolder: ({commit}, payload) => {
+    commit(types.DEL_COMPONNET_HOLDER_GLOBEL, payload)
   }
+  
 }
 
 export default actions
