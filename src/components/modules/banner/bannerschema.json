@@ -42,7 +42,8 @@
             "title": "图片链接",
             "val": "",
             "name": "src",
-            "type": "string"
+            "type": "string",
+            "format": "color"
           },
           "title": {
             "title": "banner相关文字",
