@@ -107,7 +107,9 @@ export default {
       this.setCurrentComponent({ index, name, id })
       //引入组件相应的schema文件,存入本地
       this.schemaData = require('./modules/' + name + '/' + name + 'schema.json')
-      localStorage.setItem(`'${name}'` + id , JSON.stringify(this.schemaData))
+      
+      let schema = JSON.parse(localStorage.getItem(`'${name}'` + id))
+      if(!schema) localStorage.setItem(`'${name}'` + id , JSON.stringify(this.schemaData))
       //触发show
     },
     //递归查找index

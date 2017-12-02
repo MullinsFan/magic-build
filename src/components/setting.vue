@@ -26,7 +26,6 @@
         </li>
       </ul>
     </div>
-    <input type="file" name="">
     <button @click="handleSubmit">保存</button>
     <button @click="clearData">清除所有数据</button>
   </div>
@@ -71,12 +70,13 @@ function cloneDeep(obj) {
 export default {
   data() {
     return {
-      result: null,
-      once: true,
-      secRes: [],
-      secItems: [],
-      count: {},//存储不同组件的count
-      id: null,
+      // res: null, //jsonschema
+      result: null, //schema.properties
+      once: true, //showtable调用次数
+      secRes: [], //二级数据的数组
+      secItems: [], //二级数组中的数组
+      count: {}, //存储不同组件的count
+      id: null, //不同组件的不同id
     };
   },
   computed: {
@@ -90,16 +90,41 @@ export default {
       return this.pageData.preComponentList[index].data;
     },
     show() {
+      console.log("show")
       const vm = this
       let name = vm.currentComponent.name
       vm.id = vm.currentComponent.id
       //取出本地存储的组件相应的shcema文件
-      let res = JSON.parse(localStorage.getItem(`'${name}'` + vm.id))
-      if(res == null) return false
+      vm.res = JSON.parse(localStorage.getItem(`'${name}'` + vm.id))
+      if(vm.res == null) return false
       // localStorage.setItem(`'${name}'` + id, JSON.stringify(res))
       
-      vm.result = res.properties
-      vm.showTable()
+      vm.result = vm.res.properties
+      // vm.showTable()
+      vm.secRes = JSON.parse(localStorage.getItem("table" + vm.id))
+      console.log("secRes")
+      if(vm.secRes == null) {
+        for(let x in vm.result) {
+          if(vm.result[x].type === "array") {
+            //将二级数据转换成数组
+            let sec = vm.result[x].items.properties
+            let id = vm.id
+            if(vm.count[id] === undefined) {
+              vm.count[id] = vm.result[x].minItems
+            }
+            vm.secItems = []
+            vm.secRes = []
+            for(let y in sec) {
+              let item = cloneDeep(sec[y])
+              vm.secItems.push(item)
+            }
+            for(let m = 0; m < vm.count[id] ; m++) {
+              let secItems = cloneDeep(vm.secItems)
+              vm.secRes.push(secItems)
+            }
+          }
+        }
+      }
 
       return true
     },
@@ -108,42 +133,21 @@ export default {
     ...mapActions([
       'setComponentsData'
     ]),
-    showTable() {
-      const vm = this
-      for(let x in vm.result) {
-        if(vm.result[x].type === "array") {
-          //将二级数据转换成数组
-          let sec = vm.result[x].items.properties
-          let id = vm.id
-          if(vm.count[id] === undefined) {
-            vm.count[id] = vm.result[x].minItems
-          }
-          vm.secItems = []
-          vm.secRes = []
-          for(let y in sec) {
-            let item = cloneDeep(sec[y])
-            vm.secItems.push(item)
-          }
-          for(let m = 0; m < vm.count[id] ; m++) {
-            let secItems = cloneDeep(vm.secItems)
-            vm.secRes.push(secItems)
-          }
-        }
-      }
-    },
     delItems() {
-      const vm = this
-      let id = vm.id
-      if(vm.count[id] > 1) {
-        vm.count[id] = vm.count[id] - 1 
-        vm.showTable()
+      let id = this.id
+      if(this.count[id] > 1) {
+        this.count[id] --
+        let secItems = cloneDeep(this.secItems)
+        this.secRes.pop(secItems)
+        localStorage.setItem("table" + this.id , JSON.stringify(this.secRes))
       }
     },
     addItems() {
-      const vm = this
-      let id = vm.id
-        vm.count[id] = vm.count[id] + 1 
-        vm.showTable()
+      let id = this.id
+      this.count[id] ++
+      let secItems = cloneDeep(this.secItems)
+      this.secRes.push(secItems)
+      this.saveLocal()
     },
     clearData() {
       localStorage.clear()
@@ -176,11 +180,15 @@ export default {
           vm.data[x] = vm.result[x].val
         }    
       }
-
+      vm.saveLocal()
       vm.setComponentsData({
         index: vm.currentComponent.index,
         data: vm.data
       })
+    },
+    saveLocal() {
+      localStorage.setItem(`'${this.currentComponent.name}'` + this.id , JSON.stringify(this.res))
+      localStorage.setItem("table" + this.id , JSON.stringify(this.secRes))
     }
   }
 };
