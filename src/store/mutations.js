@@ -10,8 +10,12 @@ const mutations = {
     Object.assign(state.currentComponent, payload)
   },
 
-  [types.SET_COMPONENTS](state, payload) {
-    state.pageData.preComponentList.push(payload)
+  [types.ADD_COMPONENTS](state, payload) {
+    // if (state.pageData.preComponentList.length === 0) {
+      state.pageData.preComponentList.push(payload)
+    // }
+
+
   },
 
   [types.SET_COMPONENTS_DATA](state, payload) {

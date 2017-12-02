@@ -6,6 +6,7 @@
             @drop="drop"
             @dragover="dragOver"
             @dragenter="dragEnter"
+            @dragleave="dragLeave"
             @dragend="dragEnd"
             @click="handleClick">
           <transition-group name="drag" tag="div">
@@ -35,7 +36,7 @@ export default {
   methods: {
     ...mapActions([
       'sortComponents',
-      'setComponents',
+      'addComponents',
       'setCurrentComponent'
     ]),
     moveItem (e) {
@@ -45,16 +46,13 @@ export default {
       e.dataTransfer.setData('itemIndex', elIndex)
     },
     drop(e) {
-      console.log("components",this.components)
+      console.log("drop -----------")
       // 放下拖拽元素操作
       let addFlag = e.dataTransfer.getData('addFlag')
       // 判断是添加模块还是拖动模块
       if (addFlag) {
         let { name, data, id } = JSON.parse(e.dataTransfer.getData("info"));
-        // console.log("name:",name)
-        // console.table("data:",data)
-        // console.log('id', id)
-        this.setComponents({
+        this.addComponents({
           // 模块名称
           name,
           // 模块数据
@@ -71,25 +69,30 @@ export default {
         let dragIndex = e.dataTransfer.getData('itemIndex')
         // 若拖到相同组件则不改变组件顺序
         if (!currentIndex || currentIndex === dragIndex) return
-        // console.log('currentIndex', currentIndex)
-        // console.log('drag Item', dragIndex)
         // 重新排序
         this.sortComponents({ currentIndex: currentIndex, dragIndex: dragIndex })
-        // console.log('data', this.pageData)
+        this.$forceUpdate()
       }
     },
     dragOver(e) {
       /*拖拽元素在目标元素头上移动的时候*/
       e.preventDefault();
+      console.log('e.target', e.target)
+      console.log('e', e)
+      console.log('e.offsetX', e.offsetX)
+      console.log('e.offsetY', e.offsetY)
       // 处理 dataset of null 报错
-      if (e.target === e.currentTarget.children[0] || e.target === e.currentTarget) return
+      if (e.target === e.currentTarget.children[0] || e.target === e.currentTarget || e.target.className === "componentHolder") return
       let currentIndex = this.findIndex(e.target)
-      console.log('current index', currentIndex)
       return true;
     },
     dragEnter(e) {
       /*拖拽元素进入目标元素头上的时候*/
+      console.log('drag enter ------')
       return true;
+    },
+    dragLeave(e) {
+      console.log('drag leave ------')
     },
     dragEnd(e) {
       // 清除flag, 避免影响移动组件
@@ -115,6 +118,16 @@ export default {
       } else {
         return index
       }
+    },
+    // 获取组件属性
+    // getComponentAttr (el, attr)
+    // ,
+    // 随机生成组件 id
+    guid () {
+      function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+      }
+      return s4() + s4() + '-' + s4()
     }
   },
   computed: {
