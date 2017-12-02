@@ -14,7 +14,7 @@
             v-for="(item,index) in pageData.preComponentList"
             :data-index="index"
             :data-id="item.id"
-            :key="item.name"
+            :key="item.id"
             :is="item.name"
             :data="item.data"
             ></div>
@@ -46,7 +46,7 @@ export default {
       e.dataTransfer.setData('itemIndex', elIndex)
     },
     drop(e) {
-      console.log("drop -----------")
+      // console.log("drop -----------")
       // 放下拖拽元素操作
       let addFlag = e.dataTransfer.getData('addFlag')
       // 判断是添加模块还是拖动模块
@@ -77,22 +77,29 @@ export default {
     dragOver(e) {
       /*拖拽元素在目标元素头上移动的时候*/
       e.preventDefault();
-      console.log('e.target', e.target)
-      console.log('e', e)
-      console.log('e.offsetX', e.offsetX)
-      console.log('e.offsetY', e.offsetY)
       // 处理 dataset of null 报错
       if (e.target === e.currentTarget.children[0] || e.target === e.currentTarget || e.target.className === "componentHolder") return
+      // 获取当前组件index
       let currentIndex = this.findIndex(e.target)
+      // 获取组件宽度
+      let elHeight = this.getComponentAttr(e.target, 'clientHeight')
+      let elOffsetY = e.offsetY
+      // console.log('elHeight', elHeight)
+      // console.log('elOffsetY', elOffsetY)
+      if (elOffsetY < elHeight/2) {
+        console.log('up')
+      } else {
+        console.log('down')
+      }
       return true;
     },
     dragEnter(e) {
       /*拖拽元素进入目标元素头上的时候*/
-      console.log('drag enter ------')
+      // console.log('drag enter ------')
       return true;
     },
     dragLeave(e) {
-      console.log('drag leave ------')
+      // console.log('drag leave ------')
     },
     dragEnd(e) {
       // 清除flag, 避免影响移动组件
@@ -122,8 +129,15 @@ export default {
       }
     },
     // 获取组件属性
-    // getComponentAttr (el, attr)
-    // ,
+    getComponentAttr (el, attr) {
+      let index = el.dataset.index
+      if(index === undefined) {
+        return this.getComponentAttr(el.parentElement, attr)
+      } else {
+        return el[attr]
+      }
+    }
+    ,
     // 随机生成组件 id
     guid () {
       function s4() {
