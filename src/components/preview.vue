@@ -48,6 +48,7 @@ export default {
       'delComponentHolder'
     ]),
     moveItem (e) {
+      console.log('drag start ___________')
       const el = e.target
       // 获取拖拽模块index并存储
       let elIndex = el.dataset.index
@@ -55,21 +56,24 @@ export default {
     },
     drop(e) {
       // console.log("drop -----------")
-      this.delComponentHolder(this.componentHolderName)
+      this.dragOver.oldY = ""
       // 放下拖拽元素操作
       let addFlag = e.dataTransfer.getData('addFlag')
       // 判断是添加模块还是拖动模块
       if (addFlag) {
         let { name, data, id } = JSON.parse(e.dataTransfer.getData("info"));
-        this.addComponents({
-          // 模块名称
-          name,
-          // 模块数据
+        let componentInfo = {
+          name: name,
           data: data,
-          // 模块id
-          id: id,
-        })
+          id: id
+        }
+        let payload = {
+          info: componentInfo,
+          holderName: this.componentHolderName
+        }
+        this.addComponents(payload)
       } else {
+        this.delComponentHolder(this.componentHolderName)
         // 解决拖到空白地方报错
         if (e.target === e.currentTarget) return
         // 获取当前组件index
@@ -83,6 +87,7 @@ export default {
       }
     },
     dragOver(e) {
+      console.log('drag over ____________')
       /*拖拽元素在目标元素头上移动的时候*/
       e.preventDefault();
       // 处理 dataset of null 报错
@@ -118,16 +123,15 @@ export default {
       // console.log('elHeight', elHeight)
       // console.log('elOffsetY', elOffsetY)
       // 判断鼠标移动方向
-      if (direct === "down") {
+      if (direct === "up") {
         this.hasDown = false
         if (!this.hasUp) {
           this.delComponentHolder(this.componentHolderName)
           this.addComponentHolder({info, currentIndex})
           this.hasUp = true
         }
-      } else if (direct === "up") {
+      } else if (direct === "down") {
         this.hasUp = false
-        // currentIndex++
         if (!this.hasDown) {
           this.delComponentHolder(this.componentHolderName)
           this.addComponentHolder({info, currentIndex})
@@ -142,7 +146,7 @@ export default {
       return true;
     },
     dragLeave(e) {
-      // console.log('drag leave ------')
+      console.log('drag leave ------')
     },
     dragEnd(e) {
       // 清除flag, 避免影响移动组件

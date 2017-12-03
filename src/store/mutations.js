@@ -11,11 +11,19 @@ const mutations = {
   },
 
   [types.ADD_COMPONENTS](state, payload) {
-    // if (state.pageData.preComponentList.length === 0) {
-      state.pageData.preComponentList.push(payload)
-    // }
-
-
+    let { info, holderName } = payload
+    console.log('holderName', holderName)
+    if (state.pageData.preComponentList.length === 0) {
+      state.pageData.preComponentList.push(info)
+    } else {
+      console.log('state.pageData.preComponentList', state.pageData.preComponentList)
+      state.pageData.preComponentList.forEach((item, index, array) => {
+        if (item.name === holderName) {
+          console.log('add success')
+          array.splice(index, 1, info)
+        }
+      })
+    }
   },
 
   [types.SET_COMPONENTS_DATA](state, payload) {
@@ -50,9 +58,9 @@ const mutations = {
   },
 
   [types.DEL_COMPONNET_HOLDER_GLOBEL] (state, name) {
-    let holerName = name
+    let holderName = name
     let newArr = state.pageData.preComponentList.filter(function (item) {
-      if (item.name !== holerName) {
+      if (item.name !== holderName) {
         return item
       }
     })
