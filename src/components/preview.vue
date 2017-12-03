@@ -80,7 +80,6 @@ export default {
         if (!currentIndex || currentIndex === dragIndex) return
         // 重新排序
         this.sortComponents({ currentIndex: currentIndex, dragIndex: dragIndex })
-        this.$forceUpdate()
       }
     },
     dragOver(e) {
@@ -94,10 +93,8 @@ export default {
         id: this.guid()
       }
       // 判断是否初始化
-      if (!this.dragOver.oldY) {
-        this.dragOver.oldY = e.screenY
-      }
-      console.log('old, new:', this.dragOver.oldY, e.screenY)
+      if (!this.dragOver.oldY) this.dragOver.oldY = e.screenY
+      // console.log('old, new:', this.dragOver.oldY, e.screenY)
       // 当前y值与oldY作差
       let d = e.screenY - this.dragOver.oldY
       let direct = ""
@@ -106,11 +103,11 @@ export default {
         direct = "up"
       } else if (d > 0) {
         direct = "down"
+      } else {
+        return false
       }
       console.log('direct', direct)
       this.dragOver.oldY = e.screenY
-
-      // let onceFlag = e.dataTransfer.getData('onceFlag')
 
       // 获取当前组件index
       let currentIndex = this.findIndex(e.target)
@@ -120,27 +117,25 @@ export default {
       // let elOffsetY = e.offsetY
       // console.log('elHeight', elHeight)
       // console.log('elOffsetY', elOffsetY)
-      // if (onceFlag) {
-        // 判断鼠标在组件内部的位置
-        if (direct === "up") {
-          // console.log('up')
-          this.hasDown = false
-          if (!this.hasUp) {
-            this.delComponentHolder(this.componentHolderName)
-            this.addComponentHolder({info, currentIndex})
-            this.hasUp = true
-          }
-        } else if (direct === "down") {
-          // console.log('down')
-          this.hasUp = false
-          currentIndex++
-          if (!this.hasDown) {
-            this.delComponentHolder(this.componentHolderName)
-            this.addComponentHolder({info, currentIndex})
-            this.hasDown = true
-          }
+      // 判断鼠标移动方向
+      if (direct === "up") {
+        // console.log('up')
+        this.hasDown = false
+        if (!this.hasUp) {
+          this.delComponentHolder(this.componentHolderName)
+          this.addComponentHolder({info, currentIndex})
+          this.hasUp = true
         }
-      // }
+      } else if (direct === "down") {
+        // console.log('down')
+        this.hasUp = false
+        currentIndex++
+        if (!this.hasDown) {
+          this.delComponentHolder(this.componentHolderName)
+          this.addComponentHolder({info, currentIndex})
+          this.hasDown = true
+        }
+      }
       return true;
     },
     dragEnter(e) {
