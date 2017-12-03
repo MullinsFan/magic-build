@@ -20,13 +20,23 @@ const actions = {
     commit(types.SORT_COMPONENTS_GLOBEL, payload)
   },
   
-  addComponentHolder: ({commit}, payload) => {
-    commit(types.ADD_COMPONNET_HOLDER_GLOBEL, payload)
+  addComponentHolder: ({commit, state}, payload) => {
+    let { info, currentId, direct } = payload
+    let currentIndex = null
+
+    // 获取当前组件index
+    state.pageData.preComponentList.forEach((item, index) => {
+      if (item.id === currentId) currentIndex = index
+    })
+    
+    // 判断需要添加holder组件的位置,如果向下currentIndex++
+    if (direct > 0) currentIndex++
+    commit(types.ADD_COMPONNET_HOLDER_GLOBEL, { info, currentIndex })
   },
   
   delComponentHolder: ({commit}, payload) => {
     commit(types.DEL_COMPONNET_HOLDER_GLOBEL, payload)
-  }
+  },
   
 }
 

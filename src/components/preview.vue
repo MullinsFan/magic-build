@@ -48,6 +48,7 @@ export default {
       'delComponentHolder'
     ]),
     moveItem (e) {
+      this.dragOver.oldY = ""
       console.log('drag start ___________')
       const el = e.target
       // 获取拖拽模块index并存储
@@ -73,70 +74,79 @@ export default {
         }
         this.addComponents(payload)
       } else {
+        // 删除页面中的holder组件
         this.delComponentHolder(this.componentHolderName)
+
         // 解决拖到空白地方报错
         if (e.target === e.currentTarget) return
+
         // 获取当前组件index
         let currentIndex = this.findIndex(e.target)
+
         // 获取拖拽组件index
         let dragIndex = e.dataTransfer.getData('itemIndex')
+
         // 若拖到相同组件则不改变组件顺序
         if (!currentIndex || currentIndex === dragIndex) return
+        
         // 重新排序
         this.sortComponents({ currentIndex: currentIndex, dragIndex: dragIndex })
       }
     },
     dragOver(e) {
-      console.log('drag over ____________')
       /*拖拽元素在目标元素头上移动的时候*/
+      const el = e.target
       e.preventDefault();
+
       // 处理 dataset of null 报错
       if (e.target === e.currentTarget.children[0] || e.target === e.currentTarget || e.target.className === "componentHolder") return
+
       // 设置holder组件信息
       let info = {
         name: this.componentHolderName,
         id: this.guid()
       }
+
       // 判断是否初始化
       if (!this.dragOver.oldY) this.dragOver.oldY = e.screenY
-      // console.log('old, new:', this.dragOver.oldY, e.screenY)
+      
       // 当前y值与oldY作差
-      let d = e.screenY - this.dragOver.oldY
-      let direct = ""
-      // 判断鼠标移动方向
-      if (d < 0) {
-        direct = "up"
-      } else if (d > 0) {
-        direct = "down"
-      } else {
-        return false
-      }
-      console.log('direct', direct)
+      let direct = e.screenY - this.dragOver.oldY
       this.dragOver.oldY = e.screenY
-
-      // 获取当前组件index
-      let currentIndex = this.findIndex(e.target)
-
-      // 获取组件宽度
-      // let elHeight = this.getComponentAttr(e.target, 'clientHeight')
-      // let elOffsetY = e.offsetY
-      // console.log('elHeight', elHeight)
-      // console.log('elOffsetY', elOffsetY)
+      
       // 判断鼠标移动方向
-      if (direct === "up") {
+      // direct < 0 --> up
+      // direct > 0 --> down
+      if (direct > 0) {
         this.hasDown = false
         if (!this.hasUp) {
+
+          // 删除页面中的holder组件
           this.delComponentHolder(this.componentHolderName)
-          this.addComponentHolder({info, currentIndex})
+
+          // 获取当前组件id
+          let currentId = this.getComponentAttr(el, "id")
+
+          // 添加hloder组件
+          this.addComponentHolder({info, currentId, direct})
           this.hasUp = true
         }
-      } else if (direct === "down") {
+      } else if (direct < 0) {
         this.hasUp = false
         if (!this.hasDown) {
+
+          // 删除页面中的holder组件
           this.delComponentHolder(this.componentHolderName)
-          this.addComponentHolder({info, currentIndex})
+
+          // 获取当前组件id
+          let currentId = this.getComponentAttr(el, "id")
+
+          // 添加hloder组件
+          this.addComponentHolder({info, currentId, direct})
           this.hasDown = true
         }
+      } else {
+        return false
       }
       return true;
     },
@@ -146,11 +156,13 @@ export default {
       return true;
     },
     dragLeave(e) {
-      console.log('drag leave ------')
+      // console.log('drag leave ------')
+      this.dragOver.oldY = ""
     },
     dragEnd(e) {
       // 清除flag, 避免影响移动组件
       e.dataTransfer.clearData('addFlag')
+      this.dragOver.oldY = ""
       return false;
     },
     handleClick(e) {
@@ -159,6 +171,7 @@ export default {
       let name = this.pageData.preComponentList[index].name
       let id = this.pageData.preComponentList[index].id
       this.setCurrentComponent({ index, name, id })
+      
       //引入组件相应的schema文件,存入本地
       this.schemaData = require('./modules/' + name + '/' + name + 'schema.json')
       
@@ -177,14 +190,13 @@ export default {
     },
     // 获取组件属性
     getComponentAttr (el, attr) {
-      let index = el.dataset.index
-      if(index === undefined) {
+      let result = el.dataset[attr]
+      if(result === undefined) {
         return this.getComponentAttr(el.parentElement, attr)
       } else {
-        return el[attr]
+        return result
       }
-    }
-    ,
+    },
     // 随机生成组件 id
     guid () {
       function s4() {
