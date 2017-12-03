@@ -118,14 +118,14 @@ export default {
       // console.log('elHeight', elHeight)
       // console.log('elOffsetY', elOffsetY)
       // 判断鼠标移动方向
-      if (direct === "up") {
+      if (direct === "down") {
         this.hasDown = false
         if (!this.hasUp) {
           this.delComponentHolder(this.componentHolderName)
           this.addComponentHolder({info, currentIndex})
           this.hasUp = true
         }
-      } else if (direct === "down") {
+      } else if (direct === "up") {
         this.hasUp = false
         // currentIndex++
         if (!this.hasDown) {
