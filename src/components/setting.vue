@@ -1,11 +1,11 @@
 <template>
-  <div class="wrap">设置
-
+  <div class="wrap">
     <div v-if = "show">
       <ul class="data">
         <li v-for="(item,index) in result" :key="index">
-          <label>{{ item.title }}:</label>
+          <label>{{ item.title }} :</label>
           <input v-model="item.val" placeholder="请填写" v-if="!item.items">
+          <color-Picker v-model="item.val" v-if="item.format == 'color'"></color-Picker>
           <table v-if = "item.items">
               <tr>
                 <th v-for="secItem in item.items.properties" @lick="addItems" >
@@ -16,7 +16,6 @@
               <tr v-for="(secs,index) in secRes" :key="index">
                 <td v-for="(secitem,index) in secs" :key="index">
                   <input v-model="secitem.val" placeholder="请填写" >
-                  <!-- <input v-model="secitem.val" placeholder="请填写" v-if="!secitem.items"> -->
                 </td>
               </tr>
 
@@ -25,13 +24,17 @@
             </table>
         </li>
       </ul>
+
+      <button class="save" @click="handleSubmit">保存</button>
+      <button class="clear" @click="clearData">清除本地数据</button>
     </div>
-    <button @click="handleSubmit">保存</button>
-    <button @click="clearData">清除所有数据</button>
+    
+    
   </div>
 </template>
 
 <script>
+import modules from "./modules";
 import { mapGetters, mapActions } from 'vuex'
 //深拷贝函数
 function cloneDeep(obj) {
@@ -79,6 +82,9 @@ export default {
       id: null, //不同组件的不同id
     };
   },
+  components: {
+    ...modules
+  },
   computed: {
     ...mapGetters([
       'currentComponent',
@@ -90,7 +96,6 @@ export default {
       return this.pageData.preComponentList[index].data;
     },
     show() {
-      console.log("show")
       const vm = this
       let name = vm.currentComponent.name
       vm.id = vm.currentComponent.id
@@ -102,7 +107,6 @@ export default {
       vm.result = vm.res.properties
       // vm.showTable()
       vm.secRes = JSON.parse(localStorage.getItem("table" + vm.id))
-      console.log("secRes")
       if(vm.secRes == null) {
         for(let x in vm.result) {
           if(vm.result[x].type === "array") {
@@ -216,40 +220,69 @@ export default {
   position: relative;
   width: 360px;
   background-color: #ede7f6;
+  color: #646065;
 }
 .data {
   margin: 24px;
-  font-size: 14px;
+  font-size: 12px;
   li {
-    margin-bottom: 8px;
+    margin-bottom: 12px;
   }
   table,th,td {
     margin-top: 10px;
     text-align: center;
+    input {
+      width: 140px;
+      border: none;
+    }
   }
   th,td {
-    border: 1px solid #000; 
+    border: 1px solid #646065; 
   }
   th {
     padding: 3px;
+    color: #fff;
+    font-weight: normal;
+    background-color: #7e57c2;
   }
   input {
-    width: 150px;
-    color: #000;
-    padding-left: 8px;
+    height: 18px;
+    width: 100px;
+    padding-left: 6px;
+    border: 1px solid #DADADA;
+    color: #646065;
+    font-size: 12px;
   }
   //添加定位
   .add {
     position: relative;
-    left: 30%;
+    left: 40%;
     top: -4px;
     cursor: pointer;
   }
   .del {
     position: relative;
-    left: 70%;
+    left: 60%;
     top: -2px;
     cursor: pointer;
   }
+}
+.save {
+  width: 40px;
+  margin-left: 24px;
+  border: none;
+  border-radius: 3px;
+  background-color: #7e57c2;
+  color: #fff;
+  line-height: 24px;
+}
+.clear {
+  width: 96px;
+  margin-left: 6px;
+  border: none;
+  border-radius: 3px;
+  background-color: #7e57c2;
+  color: #fff;
+  line-height: 24px;
 }
 </style>
