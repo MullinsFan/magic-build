@@ -27,17 +27,25 @@
 <script>
 import modules from "./modules"
 import { mapGetters, mapActions } from 'vuex'
+
+const componentHolderName = "componentHolder"
+
 export default {
   data() {
     return {
       schemaData: null,
+      componentHolderName: componentHolderName,
+      hasUp: false,
+      hasDown: false
     };
   },
   methods: {
     ...mapActions([
       'sortComponents',
       'addComponents',
-      'setCurrentComponent'
+      'setCurrentComponent',
+      'addComponentHolder',
+      'delComponentHolder'
     ]),
     moveItem (e) {
       const el = e.target
@@ -47,6 +55,7 @@ export default {
     },
     drop(e) {
       // console.log("drop -----------")
+      this.delComponentHolder(this.componentHolderName)
       // 放下拖拽元素操作
       let addFlag = e.dataTransfer.getData('addFlag')
       // 判断是添加模块还是拖动模块
@@ -79,18 +88,59 @@ export default {
       e.preventDefault();
       // 处理 dataset of null 报错
       if (e.target === e.currentTarget.children[0] || e.target === e.currentTarget || e.target.className === "componentHolder") return
+      // 设置holder组件信息
+      let info = {
+        name: this.componentHolderName,
+        id: this.guid()
+      }
+      // 判断是否初始化
+      if (!this.dragOver.oldY) {
+        this.dragOver.oldY = e.screenY
+      }
+      console.log('old, new:', this.dragOver.oldY, e.screenY)
+      // 当前y值与oldY作差
+      let d = e.screenY - this.dragOver.oldY
+      let direct = ""
+      // 判断鼠标移动方向
+      if (d < 0) {
+        direct = "up"
+      } else if (d > 0) {
+        direct = "down"
+      }
+      console.log('direct', direct)
+      this.dragOver.oldY = e.screenY
+
+      // let onceFlag = e.dataTransfer.getData('onceFlag')
+
       // 获取当前组件index
       let currentIndex = this.findIndex(e.target)
+
       // 获取组件宽度
-      let elHeight = this.getComponentAttr(e.target, 'clientHeight')
-      let elOffsetY = e.offsetY
+      // let elHeight = this.getComponentAttr(e.target, 'clientHeight')
+      // let elOffsetY = e.offsetY
       // console.log('elHeight', elHeight)
       // console.log('elOffsetY', elOffsetY)
-      if (elOffsetY < elHeight/2) {
-        console.log('up')
-      } else {
-        console.log('down')
-      }
+      // if (onceFlag) {
+        // 判断鼠标在组件内部的位置
+        if (direct === "up") {
+          // console.log('up')
+          this.hasDown = false
+          if (!this.hasUp) {
+            this.delComponentHolder(this.componentHolderName)
+            this.addComponentHolder({info, currentIndex})
+            this.hasUp = true
+          }
+        } else if (direct === "down") {
+          // console.log('down')
+          this.hasUp = false
+          currentIndex++
+          if (!this.hasDown) {
+            this.delComponentHolder(this.componentHolderName)
+            this.addComponentHolder({info, currentIndex})
+            this.hasDown = true
+          }
+        }
+      // }
       return true;
     },
     dragEnter(e) {
@@ -161,7 +211,7 @@ export default {
 <style lang="less" scoped>
 /* 动画 */
 .drag-move {
-  transition: transform .6s;
+  transition: transform .0s;
 }
 .wrap {
   flex: 1;

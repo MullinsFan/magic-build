@@ -39,6 +39,24 @@ const mutations = {
     // console.log('after splite', newArr)
     newArr.splice(currentIndex, 0, temp[0])
     state.pageData.preComponentList = newArr
+  },
+
+  [types.ADD_COMPONNET_HOLDER_GLOBEL] (state, payload) {
+    // console.log('payload', payload)
+    let { info, currentIndex} = payload
+    // console.log('info', info)
+    // console.log('currentindex', currentIndex)
+    state.pageData.preComponentList.splice(currentIndex, 0, info)
+  },
+
+  [types.DEL_COMPONNET_HOLDER_GLOBEL] (state, name) {
+    let holerName = name
+    let newArr = state.pageData.preComponentList.filter(function (item) {
+      if (item.name !== holerName) {
+        return item
+      }
+    })
+    state.pageData.preComponentList = newArr
   }
 }
 

@@ -28,7 +28,7 @@ export default {
 .list {
 	display: flex;
   width: 750px;
-  height: 64px;
+  height: 200px;
   color: #7e57c2;
   background-color: #acf;
   .listImg {

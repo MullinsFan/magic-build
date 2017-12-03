@@ -19,7 +19,7 @@ export default {
 <style lang="less" scoped>
 .topHeader {
   width: 750px;
-  height: 64px;
+  height: 200px;
   color: #7e57c2;
   background-color: #acf;
   margin-top: 4px;

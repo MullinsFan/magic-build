@@ -29,6 +29,7 @@ export default {
       let tar = e.target
       // 设置添加flag
       e.dataTransfer.setData('addFlag', true)
+      e.dataTransfer.setData('onceFlag', true)
       let componentName = tar.getAttribute("data-name");
       //获取组件默认数据
       let compData = require('./modules/' + componentName + '/' + componentName + '.json')
