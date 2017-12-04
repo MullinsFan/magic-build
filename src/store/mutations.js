@@ -32,8 +32,11 @@ const mutations = {
   },
 
   [types.SORT_COMPONENTS_GLOBEL](state, holderIndex) {
+    // 获取暂存数组中的组件,同时清空暂存数组
+    let temp = state.pageData.tempList.shift()
+
     // 移动组件
-    state.pageData.preComponentList.splice(holderIndex, 1, state.pageData.tempList[0])
+    state.pageData.preComponentList.splice(holderIndex, 1, temp)
   },
 
   [types.ADD_COMPONNET_HOLDER_GLOBEL] (state, payload) {

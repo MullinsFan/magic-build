@@ -11,6 +11,7 @@ const state = {
   pageData: {
     preComponentList: [],
     tempList: [],
+    trash: []
   }
 }
 
