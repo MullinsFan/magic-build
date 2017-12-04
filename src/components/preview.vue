@@ -57,6 +57,8 @@ export default {
     },
     drop(e) {
       const el = e.target
+      this.hasUp = false
+      this.hasDown = false
       this.dragOver.oldY = ""
       // 放下拖拽元素操作
       let addFlag = e.dataTransfer.getData("addFlag")
@@ -106,55 +108,65 @@ export default {
         id: this.guid()
       }
 
+      // 获取当前组件id
+      let currentId = this.getComponentAttr(el, "id")
+
       // 判断是否初始化
       if (!this.dragOver.oldY) this.dragOver.oldY = e.screenY
-      
+      if (!this.dragOver.oldId) this.dragOver.oldId = currentId
       // 当前y值与oldY作差
       let direct = e.screenY - this.dragOver.oldY
+      // 判断是否还在当前组件
+      if (this.dragOver.oldId !== currentId) {
+        console.log('oldel el', el, this.dragOver.oldEl)
+        console.log('组件切换')
+        this.hasUp = false
+        this.hasDown = false
+      }
+      // 保存现在的y
       this.dragOver.oldY = e.screenY
-      
-      // 判断鼠标移动方向
-      // direct < 0 --> up
-      // direct > 0 --> down
 
-      // if (direct < 0) {
-      //   // 判断当前组件前是否有holder组件
-        
-      // }
+      // 保存现在的Id
+      this.dragOver.oldId = currentId
 
-
-
+      console.log('判断之前 direct, hasUp, hasdown：', direct, this.hasUp, this.hasDown)
 
       if (direct > 0) {
-        this.hasDown = false
-        if (!this.hasUp) {
-
-          // 删除页面中的holder组件
-          this.delComponentHolder(this.componentHolderName)
-
-          // 获取当前组件id
-          let currentId = this.getComponentAttr(el, "id")
-
-          // 添加hloder组件
-          this.addComponentHolder({info, currentId, direct})
-          this.hasUp = true
-        }
-      } else if (direct < 0) {
+        console.log('down---------------')
+        // this.hasDown = false
         this.hasUp = false
         if (!this.hasDown) {
-
+          console.log('开始删除组件')
           // 删除页面中的holder组件
           this.delComponentHolder(this.componentHolderName)
 
           // 获取当前组件id
           let currentId = this.getComponentAttr(el, "id")
-
+          console.log('添加组件')
           // 添加hloder组件
           this.addComponentHolder({info, currentId, direct})
           this.hasDown = true
         }
+      } else if (direct < 0) {
+        console.log('up---------------')
+        // this.hasUp = false
+        this.hasDown = false
+        console.log('!this.hasUp', !this.hasUp)
+        if (!this.hasUp) {
+          console.log('开始删除组件')
+          // 删除页面中的holder组件
+          this.delComponentHolder(this.componentHolderName)
+
+          // 获取当前组件id
+          let currentId = this.getComponentAttr(el, "id")
+          console.log('添加组件')
+          // 添加hloder组件
+          this.addComponentHolder({info, currentId, direct})
+          this.hasUp = true
+        }
       } else {
-        return false
+        console.log('0000000000000000')
+        // return false
       }
       return true;
     },
