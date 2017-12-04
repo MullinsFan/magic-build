@@ -190,15 +190,6 @@ export default {
       if(!schema) localStorage.setItem(`'${name}'` + id , JSON.stringify(this.schemaData))
       //触发show
     },
-    //递归查找index
-    // findIndex(element) {
-    //   let index = element.dataset.index
-    //   if(index === undefined) {
-    //     return this.findIndex(element.parentElement)
-    //   } else {
-    //     return index
-    //   }
-    // },
     getNextNode (el) {
       let result = el.dataset.id
       if(result === undefined) {

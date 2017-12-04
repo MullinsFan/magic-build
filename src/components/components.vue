@@ -15,13 +15,20 @@
 </template>
 
 <script>
-import modules from "./modules";
+import modules from "./modules"
+import { mapActions } from 'vuex'
 const $window = window;
+const componentHolderName = "componentHolder"
 export default {
   data() {
-    return {};
+    return {
+      componentHolderName: componentHolderName
+    };
   },
   methods: {
+    ...mapActions([
+      'delComponentHolder'
+    ]),
     dragStart(e) {
       let tar = e.target
       // 设置添加flag
@@ -70,6 +77,8 @@ export default {
     },
     dragEnd(e) {
       /*拖拽结束*/
+      this.delComponentHolder(this.componentHolderName)
+      // console.log('drag end')
       document.querySelector('#app').removeChild(document.querySelector('#_temp'))
       e.dataTransfer.clearData("info");
       // 清除flag, 避免影响移动组件
