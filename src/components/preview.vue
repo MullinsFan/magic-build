@@ -52,6 +52,9 @@ export default {
       this.dragOver.oldY = ""
       // console.log('drag start ___________')
       const el = e.target
+
+      // 设置拖拽效果
+      e.dataTransfer.effectAllowed = "move"
       // 获取拖拽模块index并存储
       let elId = el.dataset.id
       e.dataTransfer.setData("elId", elId)
@@ -260,7 +263,7 @@ export default {
 <style lang="less" scoped>
 /* 动画 */
 .drag-move {
-  transition: transform .0s;
+  transition: transform .05s;
 }
 .wrap {
   flex: 1;
