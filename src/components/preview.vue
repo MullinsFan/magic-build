@@ -74,14 +74,9 @@ export default {
         }
         this.addComponents(payload)
       } else {
-        // 删除页面中的holder组件
-        // this.delComponentHolder(this.componentHolderName)
 
         // 解决拖到空白地方报错
         if (el === e.currentTarget) return
-
-        // 获取当前组件index
-        // let currentIndex = this.findIndex(el)
 
         // 获取当前组件id
         let currentId = this.getComponentAttr(el, "id")
@@ -121,6 +116,15 @@ export default {
       // 判断鼠标移动方向
       // direct < 0 --> up
       // direct > 0 --> down
+
+      // if (direct < 0) {
+      //   // 判断当前组件前是否有holder组件
+        
+      // }
+
+
+
+
       if (direct > 0) {
         this.hasDown = false
         if (!this.hasUp) {
@@ -173,7 +177,7 @@ export default {
     handleClick(e) {
       const el = e.target
       if (el === e.currentTarget) return
-      let index = this.findIndex(el)
+      let index = this.getComponentAttr(el, "index")
       let name = this.pageData.preComponentList[index].name
       let id = this.pageData.preComponentList[index].id
       this.setCurrentComponent({ index, name, id })
@@ -186,12 +190,20 @@ export default {
       //触发show
     },
     //递归查找index
-    findIndex(element) {
-      let index = element.dataset.index
-      if(index === undefined) {
-        return this.findIndex(element.parentElement)
+    // findIndex(element) {
+    //   let index = element.dataset.index
+    //   if(index === undefined) {
+    //     return this.findIndex(element.parentElement)
+    //   } else {
+    //     return index
+    //   }
+    // },
+    getNextNode (el) {
+      let result = el.dataset.id
+      if(result === undefined) {
+        return this.getComponentAttr(el.parentElement, attr)
       } else {
-        return index
+        return result
       }
     },
     // 获取组件属性

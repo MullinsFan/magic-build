@@ -10,9 +10,6 @@
        <li draggable="true" data-name="list">
           <list></list>
       </li>
-      <li draggable="true" data-name="componentHolder">
-          <component-Holder></component-Holder>
-      </li>
     </ul>
   </div>
 </template>
