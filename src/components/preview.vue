@@ -28,6 +28,7 @@
 import modules from "./modules"
 import { mapGetters, mapActions } from 'vuex'
 
+const $window = window
 const componentHolderName = "componentHolder"
 
 export default {
@@ -49,11 +50,14 @@ export default {
     ]),
     moveItem (e) {
       this.dragOver.oldY = ""
-      console.log('drag start ___________')
+      // console.log('drag start ___________')
       const el = e.target
       // 获取拖拽模块index并存储
       let elId = el.dataset.id
       e.dataTransfer.setData("elId", elId)
+      // 设置拖拽过程中元素样式
+      let target = this.scaleEle(el);
+      e.dataTransfer.setDragImage(target, -10, -10);
     },
     drop(e) {
       const el = e.target
@@ -85,7 +89,7 @@ export default {
 
         // 获取拖拽组件index
         let dragId = e.dataTransfer.getData("elId")
-        console.log('dragId', dragId)
+        // console.log('dragId', dragId)
 
         // 若拖到相同组件则不改变组件顺序
         if (!currentId || currentId === dragId) return
@@ -118,8 +122,8 @@ export default {
       let direct = e.screenY - this.dragOver.oldY
       // 判断是否还在当前组件
       if (this.dragOver.oldId !== currentId) {
-        console.log('oldel el', el, this.dragOver.oldEl)
-        console.log('组件切换')
+        // console.log('oldel el', el, this.dragOver.oldEl)
+        // console.log('组件切换')
         this.hasUp = false
         this.hasDown = false
       }
@@ -129,46 +133,44 @@ export default {
       // 保存现在的Id
       this.dragOver.oldId = currentId
 
-      console.log('判断之前 direct, hasUp, hasdown：', direct, this.hasUp, this.hasDown)
+      // console.log('判断之前 direct, hasUp, hasdown：', direct, this.hasUp, this.hasDown)
 
       if (direct > 0) {
-        console.log('down---------------')
+        // console.log('down---------------')
         // this.hasDown = false
         this.hasUp = false
         if (!this.hasDown) {
-          console.log('开始删除组件')
+          // console.log('开始删除组件')
           // 删除页面中的holder组件
           this.delComponentHolder(this.componentHolderName)
 
           // 获取当前组件id
           let currentId = this.getComponentAttr(el, "id")
-          console.log('添加组件')
+          // console.log('添加组件')
           // 添加hloder组件
           this.addComponentHolder({info, currentId, direct})
           this.hasDown = true
         }
       } else if (direct < 0) {
-        console.log('up---------------')
+        // console.log('up---------------')
         // this.hasUp = false
         this.hasDown = false
-        console.log('!this.hasUp', !this.hasUp)
+        // console.log('!this.hasUp', !this.hasUp)
         if (!this.hasUp) {
-          console.log('开始删除组件')
+          // console.log('开始删除组件')
           // 删除页面中的holder组件
           this.delComponentHolder(this.componentHolderName)
 
           // 获取当前组件id
           let currentId = this.getComponentAttr(el, "id")
-          console.log('添加组件')
+          // console.log('添加组件')
           // 添加hloder组件
           this.addComponentHolder({info, currentId, direct})
           this.hasUp = true
         }
       } else {
-        console.log('0000000000000000')
-        // return false
+        return true;
       }
-      return true;
     },
     dragEnter(e) {
       /*拖拽元素进入目标元素头上的时候*/
@@ -185,6 +187,7 @@ export default {
       e.dataTransfer.clearData("elId")
       this.dragOver.oldY = ""
       this.delComponentHolder(this.componentHolderName)
+      document.querySelector('#app').removeChild(document.querySelector('#_temp'))
       return false;
     },
     handleClick(e) {
@@ -202,13 +205,28 @@ export default {
       if(!schema) localStorage.setItem(`'${name}'` + id , JSON.stringify(this.schemaData))
       //触发show
     },
-    getNextNode (el) {
-      let result = el.dataset.id
-      if(result === undefined) {
-        return this.getComponentAttr(el.parentElement, attr)
-      } else {
-        return result
-      }
+    scaleEle(target) {
+      // 缩放拖拽过程元素
+      let width = parseInt(getComputedStyle(target).getPropertyValue("width"));
+      let height = parseInt(
+        $window.getComputedStyle(target).getPropertyValue("height")
+      );
+      let $app = document.querySelector("#app");
+      let node = target.cloneNode(true);
+      let wrapDiv = document.createElement("div")
+      wrapDiv.id = '_temp'
+      wrapDiv.appendChild(node)
+      Object.assign(wrapDiv.style,{
+        listStyle: "none",
+        opacity: "1",
+        position: "fixed",
+        width: width * 0.448 + "px",
+        height: height * 0.448 + "px",
+        top: "-200000px",
+        paddingLeft: "150px",
+      })
+      $app.appendChild(wrapDiv);
+      return wrapDiv
     },
     // 获取组件属性
     getComponentAttr (el, attr) {

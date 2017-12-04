@@ -30,10 +30,10 @@ export default {
       'delComponentHolder'
     ]),
     dragStart(e) {
-      let tar = e.target
+      let el = e.target
       // 设置添加flag
       e.dataTransfer.setData('addFlag', true)
-      let componentName = tar.getAttribute("data-name");
+      let componentName = el.getAttribute("data-name");
       //获取组件默认数据
       let compData = require('./modules/' + componentName + '/' + componentName + '.json')
       let guid = this.guid()
@@ -46,7 +46,7 @@ export default {
       e.dataTransfer.effectAllowed = "copy";
       e.dataTransfer.setData("info", JSON.stringify(info));
       // 设置拖拽过程中元素样式
-      let target = this.scaleEle(tar);
+      let target = this.scaleEle(el);
       e.dataTransfer.setDragImage(target, 0, 10);
     },
     scaleEle(target) {
@@ -66,12 +66,6 @@ export default {
         height: height * 0.448 + "px",
         top: "-200000px",
       })
-      // node.style.listStyle = "none";
-      // node.style.opacity = "1";
-      // node.style.position = "fixed";
-      // node.style.width = width * 0.448 + "px";
-      // node.style.height = height * 0.448 + "px";
-      // node.style.top = "-200000px";
       $app.appendChild(node);
       return node;
     },
