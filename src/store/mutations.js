@@ -33,7 +33,7 @@ const mutations = {
 
   [types.SORT_COMPONENTS_GLOBEL](state, payload) {
     let { dragId, holderName } = payload
-    console.log('dragIndex holderIndex', dragId, holderName)
+    // console.log('dragIndex holderIndex', dragId, holderName)
 
     let dragIndex = null, holderIndex = null
 
@@ -54,6 +54,8 @@ const mutations = {
         holderIndex = index
       }
     })
+    console.log('holderIndex', holderIndex)
+    if (holderIndex === null) return
 
     // 移动组件
     newArr.splice(holderIndex, 1, temp[0])

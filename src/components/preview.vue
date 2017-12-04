@@ -172,6 +172,7 @@ export default {
       e.dataTransfer.clearData("addFlag")
       e.dataTransfer.clearData("elId")
       this.dragOver.oldY = ""
+      this.delComponentHolder(this.componentHolderName)
       return false;
     },
     handleClick(e) {
