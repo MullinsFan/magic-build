@@ -16,8 +16,7 @@
               :data-index="index"
               :data-id="item.id">
               <div :is="item.name"
-                  :data="item.data"
-                  ></div>
+                  :data="item.data"></div>
             </div>
           </transition-group>
         </div>
@@ -43,11 +42,12 @@ export default {
   },
   methods: {
     ...mapActions([
-      'sortComponents',
-      'addComponents',
-      'setCurrentComponent',
-      'addComponentHolder',
-      'delComponentHolder'
+      "sortComponents",
+      "addComponents",
+      "setCurrentComponent",
+      "addComponentHolder",
+      "delComponentHolder",
+      "delAndAddComponentToTempList"
     ]),
     moveItem (e) {
       this.dragOver.oldY = ""
@@ -56,13 +56,16 @@ export default {
 
       // 设置拖拽效果
       e.dataTransfer.effectAllowed = "move"
-      // 获取拖拽模块index并存储
+      // 获取拖拽模块ID
       let componentEl = this.getComponentByAttr(el, "id")
-      let elId = componentEl.dataset.id
-      e.dataTransfer.setData("elId", elId)
+      let dragId = componentEl.dataset.id
+
       // 设置拖拽过程中元素样式
       let target = this.scaleEle(componentEl);
       e.dataTransfer.setDragImage(target, -30, -30);
+
+      // 删除并暂存当前拖拽组件
+      this.delAndAddComponentToTempList({ dragId })
     },
     drop(e) {
       const el = e.target
@@ -89,18 +92,8 @@ export default {
         // 解决拖到空白地方报错
         if (el === e.currentTarget) return
 
-        // 获取当前组件id
-        let currentId = this.getComponentAttr(el, "id")
-
-        // 获取拖拽组件index
-        let dragId = e.dataTransfer.getData("elId")
-        // console.log('dragId', dragId)
-
-        // 若拖到相同组件则不改变组件顺序
-        if (!currentId || currentId === dragId) return
-
         // 重新排序
-        this.sortComponents({ dragId: dragId, holderName: this.componentHolderName })
+        this.sortComponents({ holderName: this.componentHolderName })
       }
     },
     dragOver(e) {
@@ -189,7 +182,6 @@ export default {
     dragEnd(e) {
       // 清除flag, 避免影响移动组件
       e.dataTransfer.clearData("addFlag")
-      e.dataTransfer.clearData("elId")
       this.dragOver.oldY = ""
       this.delComponentHolder(this.componentHolderName)
       document.querySelector('#app').removeChild(document.querySelector('#_temp'))
@@ -228,7 +220,7 @@ export default {
         width: width * 0.448 + "px",
         height: height * 0.448 + "px",
         top: "-200000px",
-        paddingLeft: "150px",
+        paddingLeft: "120px",
       })
       $app.appendChild(wrapDiv);
       return wrapDiv

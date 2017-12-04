@@ -9,7 +9,8 @@ const state = {
     id: undefined
   },
   pageData: {
-    preComponentList: []
+    preComponentList: [],
+    tempList: [],
   }
 }
 

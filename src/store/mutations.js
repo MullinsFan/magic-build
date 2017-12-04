@@ -31,36 +31,9 @@ const mutations = {
     state.pageData.preComponentList[index].data = data
   },
 
-  [types.SORT_COMPONENTS_GLOBEL](state, payload) {
-    let { dragId, holderName } = payload
-    // console.log('dragIndex holderIndex', dragId, holderName)
-
-    let dragIndex = null, holderIndex = null
-
-    // 获取拖拽组件id
-    state.pageData.preComponentList.forEach((item, index) => {
-      if (item.id === dragId) dragIndex = index
-    })
-
-    // 使用一个新数组重新排序后赋给原变量
-    let newArr = state.pageData.preComponentList.concat([])
-
-    // 获取拖拽组件
-    let temp = newArr.splice(dragIndex, 1)
-    
-    // 获取holder组件index
-    newArr.forEach((item, index) => {
-      if (item.name === holderName) {
-        holderIndex = index
-      }
-    })
-    // console.log('holderIndex，dragIndex', holderIndex, dragIndex)
-    if (holderIndex === null) return
-
+  [types.SORT_COMPONENTS_GLOBEL](state, holderIndex) {
     // 移动组件
-    newArr.splice(holderIndex, 1, temp[0])
-
-    state.pageData.preComponentList = newArr
+    state.pageData.preComponentList.splice(holderIndex, 1, state.pageData.tempList[0])
   },
 
   [types.ADD_COMPONNET_HOLDER_GLOBEL] (state, payload) {
@@ -68,7 +41,7 @@ const mutations = {
     // 添加holder组件
     state.pageData.preComponentList.splice(currentIndex, 0, info)
   },
-
+  
   [types.DEL_COMPONNET_HOLDER_GLOBEL] (state, name) {
     let holderName = name
     let newArr = state.pageData.preComponentList.filter(function (item) {
@@ -77,7 +50,14 @@ const mutations = {
       }
     })
     state.pageData.preComponentList = newArr
-  }
+  },
+
+  [types.DEL_AND_ADD_COMPONNET_TO_TEMPLIST_GLOBEL] (state, dragIndex) {
+    // console.log('in mutations dragIndex', dragIndex)
+    let temp = state.pageData.preComponentList.splice(dragIndex, 1)
+    state.pageData.tempList = temp
+    // console.log('state.pageData.tempList', state.pageData.tempList)
+  },
 }
 
 export default mutations
