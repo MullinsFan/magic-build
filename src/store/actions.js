@@ -35,6 +35,13 @@ const actions = {
   
   addComponentHolder: ({commit, state}, payload) => {
     let { info, currentId, direct } = payload
+
+    const temp = state.pageData.tempList[0]
+    // console.log('dragId', temp)
+
+    // 判断此id是不是拖拽的id
+    if (temp && currentId === temp.id) return
+
     let currentIndex = null
 
     // 获取当前组件index

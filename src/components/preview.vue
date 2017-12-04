@@ -112,6 +112,7 @@ export default {
 
       // 获取当前组件id
       let currentId = this.getComponentAttr(el, "id")
+      // console.log('currentId', currentId)
 
       // 判断是否初始化
       if (!this.dragOver.oldY) this.dragOver.oldY = e.screenY
