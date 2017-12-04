@@ -54,7 +54,7 @@ const mutations = {
         holderIndex = index
       }
     })
-    console.log('holderIndex', holderIndex)
+    // console.log('holderIndex，dragIndex', holderIndex, dragIndex)
     if (holderIndex === null) return
 
     // 移动组件

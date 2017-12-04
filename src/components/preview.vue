@@ -11,13 +11,14 @@
             @click="handleClick">
           <transition-group name="drag" tag="div">
             <div draggable="true"
-            v-for="(item,index) in pageData.preComponentList"
-            :data-index="index"
-            :data-id="item.id"
-            :key="item.id"
-            :is="item.name"
-            :data="item.data"
-            ></div>
+              v-for="(item,index) in pageData.preComponentList"
+              :key="item.id"
+              :data-index="index"
+              :data-id="item.id">
+              <div :is="item.name"
+                  :data="item.data"
+                  ></div>
+            </div>
           </transition-group>
         </div>
       </div>
@@ -56,11 +57,12 @@ export default {
       // 设置拖拽效果
       e.dataTransfer.effectAllowed = "move"
       // 获取拖拽模块index并存储
-      let elId = el.dataset.id
+      let componentEl = this.getComponentByAttr(el, "id")
+      let elId = componentEl.dataset.id
       e.dataTransfer.setData("elId", elId)
       // 设置拖拽过程中元素样式
-      let target = this.scaleEle(el);
-      e.dataTransfer.setDragImage(target, -10, -10);
+      let target = this.scaleEle(componentEl);
+      e.dataTransfer.setDragImage(target, -30, -30);
     },
     drop(e) {
       const el = e.target
@@ -231,6 +233,15 @@ export default {
       $app.appendChild(wrapDiv);
       return wrapDiv
     },
+    // 通过特殊属性找到组件
+    getComponentByAttr (el, attr) {
+      let result = el.dataset[attr]
+      if(result === undefined) {
+        return this.getComponentByAttr(el.parentElement, attr)
+      } else {
+        return el
+      }
+    },
     // 获取组件属性
     getComponentAttr (el, attr) {
       let result = el.dataset[attr]
@@ -263,7 +274,7 @@ export default {
 <style lang="less" scoped>
 /* 动画 */
 .drag-move {
-  transition: transform .05s;
+  transition: transform .07s;
 }
 .wrap {
   flex: 1;
