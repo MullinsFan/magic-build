@@ -52,14 +52,14 @@ export default {
       console.log('drag start ___________')
       const el = e.target
       // 获取拖拽模块index并存储
-      let elIndex = el.dataset.index
-      e.dataTransfer.setData('itemIndex', elIndex)
+      let elId = el.dataset.id
+      e.dataTransfer.setData("elId", elId)
     },
     drop(e) {
-      // console.log("drop -----------")
+      const el = e.target
       this.dragOver.oldY = ""
       // 放下拖拽元素操作
-      let addFlag = e.dataTransfer.getData('addFlag')
+      let addFlag = e.dataTransfer.getData("addFlag")
       // 判断是添加模块还是拖动模块
       if (addFlag) {
         let { name, data, id } = JSON.parse(e.dataTransfer.getData("info"));
@@ -75,22 +75,26 @@ export default {
         this.addComponents(payload)
       } else {
         // 删除页面中的holder组件
-        this.delComponentHolder(this.componentHolderName)
+        // this.delComponentHolder(this.componentHolderName)
 
         // 解决拖到空白地方报错
-        if (e.target === e.currentTarget) return
+        if (el === e.currentTarget) return
 
         // 获取当前组件index
-        let currentIndex = this.findIndex(e.target)
+        // let currentIndex = this.findIndex(el)
+
+        // 获取当前组件id
+        let currentId = this.getComponentAttr(el, "id")
 
         // 获取拖拽组件index
-        let dragIndex = e.dataTransfer.getData('itemIndex')
+        let dragId = e.dataTransfer.getData("elId")
+        console.log('dragId', dragId)
 
         // 若拖到相同组件则不改变组件顺序
-        if (!currentIndex || currentIndex === dragIndex) return
-        
+        if (!currentId || currentId === dragId) return
+
         // 重新排序
-        this.sortComponents({ currentIndex: currentIndex, dragIndex: dragIndex })
+        this.sortComponents({ dragId: dragId, holderName: this.componentHolderName })
       }
     },
     dragOver(e) {
@@ -99,7 +103,7 @@ export default {
       e.preventDefault();
 
       // 处理 dataset of null 报错
-      if (e.target === e.currentTarget.children[0] || e.target === e.currentTarget || e.target.className === "componentHolder") return
+      if (el === e.currentTarget.children[0] || el === e.currentTarget || el.className === "componentHolder") return
 
       // 设置holder组件信息
       let info = {
@@ -161,13 +165,15 @@ export default {
     },
     dragEnd(e) {
       // 清除flag, 避免影响移动组件
-      e.dataTransfer.clearData('addFlag')
+      e.dataTransfer.clearData("addFlag")
+      e.dataTransfer.clearData("elId")
       this.dragOver.oldY = ""
       return false;
     },
     handleClick(e) {
-      if (e.target === e.currentTarget) return
-      let index = this.findIndex(e.target)
+      const el = e.target
+      if (el === e.currentTarget) return
+      let index = this.findIndex(el)
       let name = this.pageData.preComponentList[index].name
       let id = this.pageData.preComponentList[index].id
       this.setCurrentComponent({ index, name, id })

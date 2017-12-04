@@ -32,16 +32,32 @@ const mutations = {
   },
 
   [types.SORT_COMPONENTS_GLOBEL](state, payload) {
-    let { currentIndex, dragIndex } = payload
+    let { dragId, holderName } = payload
+    console.log('dragIndex holderIndex', dragId, holderName)
+
+    let dragIndex = null, holderIndex = null
+
+    // 获取拖拽组件id
+    state.pageData.preComponentList.forEach((item, index) => {
+      if (item.id === dragId) dragIndex = index
+    })
 
     // 使用一个新数组重新排序后赋给原变量
     let newArr = state.pageData.preComponentList.concat([])
 
-    // 从原数组删除当前拖动模块，保存在temp内
+    // 获取拖拽组件
     let temp = newArr.splice(dragIndex, 1)
     
-    // 将取出的模块，插入到当前模块后面
-    newArr.splice(currentIndex, 0, temp[0])
+    // 获取holder组件index
+    newArr.forEach((item, index) => {
+      if (item.name === holderName) {
+        holderIndex = index
+      }
+    })
+
+    // 移动组件
+    newArr.splice(holderIndex, 1, temp[0])
+
     state.pageData.preComponentList = newArr
   },
 
