@@ -51,7 +51,7 @@ export default {
     ]),
     moveItem (e) {
       this.dragOver.oldY = ""
-      console.log('drag start ___________')
+      // console.log('drag start ___________')
       const el = e.target
 
       // 设置拖拽效果
@@ -68,7 +68,7 @@ export default {
       this.delAndAddComponentToTempList({ dragId })
     },
     drop(e) {
-      console.log('drop-------------')
+      // console.log('drop-------------')
       const el = e.target
       this.hasUp = false
       this.hasDown = false
@@ -99,12 +99,18 @@ export default {
     },
     dragOver(e) {
       /*拖拽元素在目标元素头上移动的时候*/
-      console.log('drag over ----------')
+      // console.log('drag over ----------')
       const el = e.target
       e.preventDefault();
 
       // 处理 dataset of null 报错
-      if (el === e.currentTarget.children[0] || el === e.currentTarget || el.className === "componentHolder") return
+      if (el === e.currentTarget.children[0] || el.className === "componentHolder") return
+
+      // 拖拽到空白处取消提示
+      if (el === e.currentTarget) {
+        this.delComponentHolder(this.componentHolderName)
+        return false
+      }
 
       // 设置holder组件信息
       let info = {
@@ -173,16 +179,16 @@ export default {
     },
     dragEnter(e) {
       /*拖拽元素进入目标元素头上的时候*/
-      console.log('drag enter ------')
+      // console.log('drag enter ------')
       return true
     },
     dragLeave(e) {
-      console.log('drag leave ------')
+      // console.log('drag leave ------')
       this.dragOver.oldY = ""
     },
     dragEnd(e) {
       // 清除flag, 避免影响移动组件
-      console.log('end2------------')
+      // console.log('end2------------')
       e.dataTransfer.clearData("addFlag")
       this.dragOver.oldY = ""
       this.delComponentHolder(this.componentHolderName)

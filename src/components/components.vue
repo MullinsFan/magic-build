@@ -71,7 +71,7 @@ export default {
     },
     dragEnd(e) {
       /*拖拽结束*/
-      console.log('drag end1')
+      // console.log('drag end1')
       document.querySelector('#app').removeChild(document.querySelector('#_temp'))
       e.dataTransfer.clearData("info");
       // 清除flag, 避免影响移动组件
