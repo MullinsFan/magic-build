@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "list",
+  "type": "object",
+  "properties": {
+    "hotimg": {
+      "title": "本地图片上传",
+      "name": "hotimg",
+      "format": "hotimg",
+      "val": ""
+    },
+    "url": {
+      "title": "在线图片上传",
+      "name": "url",
+      "type": "string",
+      "val": ""
+    },
+    "width": {
+      "title": "宽度(px)",
+      "name": "width",
+      "type": "string",
+      "val": "",
+      "format": "size"
+    },
+    "height": {
+      "title": "高度(px)",
+      "name": "height",
+      "type": "string",
+      "val": "",
+      "format": "size"
+    },
+    "areas": {
+      "title": "热区",
+      "name": "areas",
+      "area": [{
+        "index": {
+          "title": "热区1",
+          "name": "index",
+          "type": "number",
+          "format": "index"
+        },
+        "title": {
+          "title": "头",
+          "val": "",
+          "name": "title",
+          "type": "string"
+        },
+        "sd": {
+          "title": "头",
+          "val": "",
+          "name": "title",
+          "type": "string"
+        },
+        "titleer": {
+          "title": "头",
+          "val": "",
+          "name": "title",
+          "type": "string"
+        }
+      }]
+    }
+  }
+}

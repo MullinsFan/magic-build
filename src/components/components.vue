@@ -10,6 +10,9 @@
        <li draggable="true" data-name="list">
           <list></list>
       </li>
+      <li draggable="true" data-name="hotpicture">
+          <hotpicture></hotpicture>
+      </li>
       <li draggable="true" data-name="componentHolder">
           <component-Holder></component-Holder>
       </li>

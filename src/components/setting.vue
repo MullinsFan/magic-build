@@ -4,7 +4,23 @@
       <ul class="data">
         <li v-for="(item,index) in result" :key="index">
           <label>{{ item.title }} :</label>
-          <input v-model="item.val" placeholder="请填写" v-if="!item.items">
+          <input class="upimg" v-if="item.format == 'hotimg'" type='file' @change='update()'/>
+          <input v-model="item.val" placeholder="请填写" v-if="!item.items && item.format != 'hotimg' && !item.areas">
+          <button v-if="item.format == 'size'" class="size" @click="addNum">+</button>
+          <button v-if="item.format == 'size'" class="size" @click="deletNum">-</button>
+          <table class="areas" v-if = "item.area">
+            <tr>
+              <th style="flex:1">热区</th>
+              <th style="flex:2">标题</th>
+              <th style="flex:3">链接</th>
+              <th style="flex:1">操作</th>
+            </tr>
+            <tr v-for="(area,index) in item.area" :key="index">
+              <td v-for="(areaone,index) in area" :key="index">
+                {{areaone.title}}
+              </td>
+            </tr>
+          </table>
           <color-Picker v-model="item.val" v-if="item.format == 'color'"></color-Picker>
           <table v-if = "item.items">
               <tr>
@@ -156,7 +172,78 @@ export default {
     clearData() {
       localStorage.clear()
     },
+    getPath(fileQuery) {
+        let imgSrc = '', imgArr = [], strSrc = ''
+        let file = fileQuery.files[0]
+        let reader = new FileReader()
+        let flag;
+        let _this = this
+        reader.onload = function(e){
+            imgSrc = fileQuery.value
+            imgArr = imgSrc.split('.')
+            strSrc = imgArr[imgArr.length - 1].toLowerCase()
+            flag = 0
+            if(strSrc.localeCompare('jpg') === 0 || strSrc.localeCompare('jpeg') === 0 || strSrc.localeCompare('gif') === 0 || strSrc.localeCompare('png') === 0) {
+              _this.data.url = e.target.result
+              _this.data.title = ''
+              _this.result.hotimg.val = e.target.result
+              flag = 1
+            } else {
+              throw new Error('File type Error! please image file upload..')
+            }
+        }
+        if (file) {
+          reader.readAsDataURL(file);
+        } else {
+          alert('请选择图片');
+        }
+    },
+    addNum(currentTarget) {
+      let arr = currentTarget.path[1].textContent.substring(0,2)
+      if (arr == '高度') {
+        if(this.result.height.val <0 ){
+          this.result.height.val = '0'
+          this.data.height = 0
+        } else {
+          this.result.height.val++
+          this.data.height++
+        }
+      } else if (arr == '宽度') {
+        if(this.result.width.val <0 ){
+          this.result.width.val = '0'
+        } else {
+          this.result.width.val++
+          this.data.width++
+        }
+      }
+    },
+    deletNum(currentTarget) {
+      let arr = currentTarget.path[1].textContent.substring(0,2)
+      if (arr == '高度') {
+        if(this.result.height.val <0 ){
+          this.result.height.val = '0'
+        } else {
+          this.result.height.val--
+          this.data.height--
+        }
+      } else if (arr == '宽度') {
+        if(this.result.width.val <0 ){
+          this.result.width.val = '0'
+        } else {
+          this.result.width.val--
+          this.data.width--
+        }
+      }
+    },
+    update(){
+        //以下即为完整客户端路径
+        let iptfileupload = document.getElementsByClassName('upimg')[0]
+        // console.log(this.data)
+        console.log(this.result)
+        this.getPath(iptfileupload)
+    },
     handleSubmit() {
+      console.log(this.result)
       const vm = this
       for(let x in vm.result) {
         if(vm.result[x].type === "array" && typeof vm.data[x] == "object") {
@@ -245,7 +332,7 @@ export default {
     font-weight: normal;
     background-color: #7e57c2;
   }
-  input {
+  >input {
     height: 18px;
     width: 100px;
     padding-left: 6px;
@@ -265,6 +352,45 @@ export default {
     left: 60%;
     top: -2px;
     cursor: pointer;
+  }
+  .upimg {
+    border: none;
+    width: 200px;
+    input {
+      border: none;
+      background-color: red;
+    }
+  }
+  .size {
+    border: none;
+    border-radius: 50%;
+    height: 20px;
+    width: 20px;
+    cursor: pointer;
+  }
+  .areas {
+    display: flex;
+    flex-direction: column;
+    table-layout:fixed;
+    tr {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      th,td {
+        width: 74px;
+        margin-top: 0px;
+        line-height: 20px;
+      }
+      td:first-child,td:last-child {
+        flex: 1;
+      }
+      td + td {
+        flex: 2;
+      }
+      td + td + td {
+        flex: 3;
+      }
+    }
   }
 }
 .save {
