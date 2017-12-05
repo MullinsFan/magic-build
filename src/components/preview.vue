@@ -7,10 +7,10 @@
             @dragover="dragOver"
             @dragenter="dragEnter"
             @dragleave="dragLeave"
-            @dragend="dragEnd"
             @click="handleClick">
           <transition-group name="drag" tag="div">
             <div draggable="true"
+              @dragend="dragEnd"
               v-for="(item,index) in pageData.preComponentList"
               :key="item.id"
               :data-index="index"
@@ -51,7 +51,7 @@ export default {
     ]),
     moveItem (e) {
       this.dragOver.oldY = ""
-      // console.log('drag start ___________')
+      console.log('drag start ___________')
       const el = e.target
 
       // 设置拖拽效果
@@ -68,6 +68,7 @@ export default {
       this.delAndAddComponentToTempList({ dragId })
     },
     drop(e) {
+      console.log('drop-------------')
       const el = e.target
       this.hasUp = false
       this.hasDown = false
@@ -98,6 +99,7 @@ export default {
     },
     dragOver(e) {
       /*拖拽元素在目标元素头上移动的时候*/
+      console.log('drag over ----------')
       const el = e.target
       e.preventDefault();
 
@@ -131,8 +133,6 @@ export default {
 
       // 保存现在的Id
       this.dragOver.oldId = currentId
-
-      // console.log('判断之前 direct, hasUp, hasdown：', direct, this.hasUp, this.hasDown)
 
       if (direct > 0) {
         // console.log('down---------------')
@@ -168,20 +168,21 @@ export default {
           this.hasUp = true
         }
       } else {
-        return true;
+        return true
       }
     },
     dragEnter(e) {
       /*拖拽元素进入目标元素头上的时候*/
-      // console.log('drag enter ------')
-      return true;
+      console.log('drag enter ------')
+      return true
     },
     dragLeave(e) {
-      // console.log('drag leave ------')
+      console.log('drag leave ------')
       this.dragOver.oldY = ""
     },
     dragEnd(e) {
       // 清除flag, 避免影响移动组件
+      console.log('end2------------')
       e.dataTransfer.clearData("addFlag")
       this.dragOver.oldY = ""
       this.delComponentHolder(this.componentHolderName)

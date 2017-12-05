@@ -71,12 +71,12 @@ export default {
     },
     dragEnd(e) {
       /*拖拽结束*/
-      this.delComponentHolder(this.componentHolderName)
-      // console.log('drag end')
+      console.log('drag end1')
       document.querySelector('#app').removeChild(document.querySelector('#_temp'))
       e.dataTransfer.clearData("info");
       // 清除flag, 避免影响移动组件
       e.dataTransfer.clearData('addFlag')
+      this.delComponentHolder(this.componentHolderName)
       return false;
     },
     // 随机生成组件 id

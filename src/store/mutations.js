@@ -46,10 +46,13 @@ const mutations = {
   },
   
   [types.DEL_COMPONNET_HOLDER_GLOBEL] (state, name) {
+    console.log('删除组件ing')
     let holderName = name
     let newArr = state.pageData.preComponentList.filter(function (item) {
       if (item.name !== holderName) {
         return item
+      } else {
+        console.log('找到了')
       }
     })
     state.pageData.preComponentList = newArr
