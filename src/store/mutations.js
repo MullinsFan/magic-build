@@ -59,6 +59,14 @@ const mutations = {
     state.pageData.tempList = temp
     // console.log('state.pageData.tempList', state.pageData.tempList)
   },
+
+  [types.SHOW_TOOL_BAR_GLOBEL](state, componentIndex) {
+    state.pageData.preComponentList[componentIndex].showToolBar = true
+  },
+
+  [types.HIDE_TOOL_BAR_GLOBEL](state, componentIndex) {
+    state.pageData.preComponentList[componentIndex].showToolBar = false
+  },
 }
 
 export default mutations

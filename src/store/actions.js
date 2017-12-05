@@ -70,6 +70,14 @@ const actions = {
     // console.log('dragIndex', dragIndex)
     commit(types.DEL_AND_ADD_COMPONNET_TO_TEMPLIST_GLOBEL, dragIndex)
   },
+
+  showToolBar: ({commit}, componentIndex) => {
+    commit(types.SHOW_TOOL_BAR_GLOBEL, componentIndex)
+  },
+
+  hideToolBar: ({commit}, componentIndex) => {
+    commit(types.HIDE_TOOL_BAR_GLOBEL, componentIndex)
+  },
   
 }
 

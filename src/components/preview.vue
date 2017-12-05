@@ -9,14 +9,19 @@
             @dragleave="dragLeave"
             @click="handleClick">
           <transition-group name="drag" tag="div">
-            <div draggable="true"
+            <div class="component-wrap"
+              @mouseover="showTool"
+              @mouseout="hideTool"
+              draggable="true"
               @dragend="dragEnd"
               v-for="(item,index) in pageData.preComponentList"
               :key="item.id"
               :data-index="index"
               :data-id="item.id">
               <div :is="item.name"
-                  :data="item.data"></div>
+                  :data="item.data"
+                  ></div>
+              <div v-show="item.showToolBar" is="toolBar"></div>
             </div>
           </transition-group>
         </div>
@@ -47,7 +52,9 @@ export default {
       "setCurrentComponent",
       "addComponentHolder",
       "delComponentHolder",
-      "delAndAddComponentToTempList"
+      "delAndAddComponentToTempList",
+      "showToolBar",
+      "hideToolBar"
     ]),
     moveItem (e) {
       this.dragOver.oldY = ""
@@ -77,11 +84,12 @@ export default {
       let addFlag = e.dataTransfer.getData("addFlag")
       // 判断是添加模块还是拖动模块
       if (addFlag) {
-        let { name, data, id } = JSON.parse(e.dataTransfer.getData("info"));
+        let { name, data, id, showToolBar } = JSON.parse(e.dataTransfer.getData("info"));
         let componentInfo = {
           name: name,
           data: data,
-          id: id
+          id: id,
+          showToolBar: showToolBar
         }
         let payload = {
           info: componentInfo,
@@ -257,6 +265,39 @@ export default {
         return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
       }
       return s4() + s4() + '-' + s4()
+    },
+    // 显示工具栏
+    showTool (e) {
+      
+      let el = e.target
+
+      let componentList = this.pageData.preComponentList
+      // 获取当前组件id
+      let currentId = this.getComponentAttr(el, "id")
+      // 是否显示
+      componentList.forEach((item, index) => {
+        if (item.id === currentId) {
+          if (!item.showToolBar) {
+            this.showToolBar(index)
+          }
+        }
+      })
+    },
+    // 隐藏工具栏
+    hideTool (e) {
+      let el = e.target
+
+      let componentList = this.pageData.preComponentList
+      // 获取当前组件id
+      let currentId = this.getComponentAttr(el, "id")
+      // 检查是否隐藏
+      componentList.forEach((item, index) => {
+        if (item.id === currentId) {
+          if (item.showToolBar) {
+            this.hideToolBar(index)
+          }
+        }
+      })
     }
   },
   computed: {
@@ -315,6 +356,9 @@ export default {
     &::-webkit-scrollbar-track-piece {
       background-color: rgba(0, 0, 0, 0.05);
       -webkit-border-radius: 5px;
+    }
+    .component-wrap {
+      position: relative;
     }
   }
 }

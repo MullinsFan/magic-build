@@ -7,8 +7,11 @@
       <li draggable="true" data-name="banner">
           <banner></banner>
       </li>
-       <li draggable="true" data-name="list">
+      <li draggable="true" data-name="list">
           <list></list>
+      </li>
+      <li draggable="true" data-name="list">
+          <tool-bar></tool-bar>
       </li>
     </ul>
   </div>
@@ -41,7 +44,8 @@ export default {
       let info = {
         name: componentName,
         data: compData,
-        id: guid
+        id: guid,
+        showToolBar: false
       };
       e.dataTransfer.effectAllowed = "copy";
       e.dataTransfer.setData("info", JSON.stringify(info));
