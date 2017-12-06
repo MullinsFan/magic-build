@@ -79,6 +79,14 @@ const actions = {
     commit(types.HIDE_TOOL_BAR_GLOBEL, componentIndex)
   },
   
+  moveComponent: ({commit, state}, payload) => {
+    commit(types.MOVE_COMPONNET_GLOBEL, payload)
+  },
+  
+  delComponent: ({commit, state}, componentId) => {
+    commit(types.DEL_COMPONNET_GLOBEL, componentId)
+  },
+  
 }
 
 export default actions

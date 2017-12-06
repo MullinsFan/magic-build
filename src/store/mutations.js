@@ -67,6 +67,40 @@ const mutations = {
   [types.HIDE_TOOL_BAR_GLOBEL](state, componentIndex) {
     state.pageData.preComponentList[componentIndex].showToolBar = false
   },
+  
+  [types.MOVE_COMPONNET_GLOBEL](state, payload) {
+    let { currentId, direct } = payload
+    // console.log('currentId', currentId)
+    // console.log('direct', direct)
+    let componentList = state.pageData.preComponentList
+    let totalComponent = componentList.length
+    let currentIndex = null
+    let temp = []
+    
+    // 获取当前组件index
+    componentList.forEach((item, index) => {
+      if (item.id === currentId) currentIndex = index
+    })
+    // console.log('current index', currentIndex)
+    // console.log('totalComponent', totalComponent)
+    if (direct === "UP" && currentIndex > 0) {
+      temp = componentList.splice(currentIndex, 1)
+      currentIndex--
+      // console.log('refIndex', currentIndex)
+      componentList.splice(currentIndex, 0, temp[0])
+    } else if (direct === "DOWN" && currentIndex < totalComponent) {
+      temp = componentList.splice(currentIndex, 1)
+      currentIndex++
+      componentList.splice(currentIndex, 0, temp[0])
+    } else {
+      return false
+    }
+  },
+
+  [types.DEL_COMPONNET_GLOBEL](state, componentId) {
+    state.pageData.preComponentList
+  },
+
 }
 
 export default mutations

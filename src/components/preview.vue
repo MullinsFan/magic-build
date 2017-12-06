@@ -66,8 +66,6 @@ export default {
       e.dataTransfer.effectAllowed = "move"
       // 获取拖拽模块ID
       let componentEl = this.getComponentByAttr(el, "id")
-      console.log('componentEl')
-      console.log(componentEl)
       let dragId = componentEl.dataset.id
 
       // 设置拖拽过程中元素样式
@@ -244,7 +242,7 @@ export default {
         width: width * 0.448 + "px",
         height: height * 0.448 + "px",
         top: "-200000px",
-        paddingLeft: "120px",
+        paddingLeft: "80px",
       })
       $app.appendChild(wrapDiv);
       return wrapDiv
