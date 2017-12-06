@@ -83,8 +83,8 @@ const actions = {
     commit(types.MOVE_COMPONNET_GLOBEL, payload)
   },
   
-  delComponent: ({commit, state}, componentId) => {
-    commit(types.DEL_COMPONNET_GLOBEL, componentId)
+  delComponent: ({commit}, componentIndex) => {
+    commit(types.DEL_COMPONNET_GLOBEL, componentIndex)
   },
   
 }

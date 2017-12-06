@@ -10,9 +10,6 @@
       <li draggable="true" data-name="list">
           <list></list>
       </li>
-      <li draggable="true" data-name="list">
-          <tool-bar></tool-bar>
-      </li>
     </ul>
   </div>
 </template>

@@ -97,8 +97,8 @@ const mutations = {
     }
   },
 
-  [types.DEL_COMPONNET_GLOBEL](state, componentId) {
-    state.pageData.preComponentList
+  [types.DEL_COMPONNET_GLOBEL](state, componentIndex) {
+    state.pageData.preComponentList.splice(componentIndex, 1)
   },
 
 }

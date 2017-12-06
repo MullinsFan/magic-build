@@ -2,14 +2,14 @@
   <div class="tool-wrap">
     <span @click.stop="moveUp">上移</span>
     <span @click.stop="moveDown">下移</span>
-    <span>删除</span>
-    <span>编辑</span>
-    <span>复制</span>
+    <span @click.stop="deleteComponent">删除</span>
+    <span >编辑</span>
+    <span >复制</span>
   </div>
 </template>
 
 <script>
-  import { mapActions } from "vuex"
+  import { mapGetters ,mapActions } from "vuex"
 
   const COMPONENT_NAMER = "toolBar"
   const UP = "UP"
@@ -19,12 +19,12 @@
     name: COMPONENT_NAMER,
     data () {
       return {
-        // ditectUp: UP,
       }
     },
     methods: {
       ...mapActions([
-        "moveComponent"
+        "moveComponent",
+        "delComponent"
       ]),
       // 获取组件属性
       getComponentAttr (el, attr) {
@@ -37,9 +37,13 @@
       },
       // 上移
       moveUp (e) {
+        // 解决dataset报错问题
         let el = e.target.parentElement.parentElement
+        // 移动方向
         let direct = UP
+        // 获取当前组件id
         let currentId = this.getComponentAttr(el, "id")
+        // 移动组件
         this.moveComponent({
           currentId: currentId,
           direct: direct
@@ -55,6 +59,26 @@
           direct: direct
         })
       },
+      // 删除组件
+      deleteComponent (e) {
+        let el = e.target.parentElement.parentElement
+        // 获取组件列表
+        let componentList = this.pageData.preComponentList
+        // console.log('componentList', componentList)
+        // 获取当前组件id
+        let currentId = this.getComponentAttr(el, "id")
+        componentList.forEach((item, index) => {
+          if (item.id === currentId) {
+            // 删除组件
+            this.delComponent(index)
+          }
+        })
+      }
+    },
+    computed: {
+      ...mapGetters([
+        "pageData"
+      ])
     }
   }
 </script>
