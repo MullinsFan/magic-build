@@ -44,7 +44,8 @@ export default {
       schemaData: null,
       componentHolderName: componentHolderName,
       hasUp: false,
-      hasDown: false
+      hasDown: false,
+      isDrag: false
     };
   },
   methods: {
@@ -62,6 +63,9 @@ export default {
       this.dragOver.oldY = ""
       // console.log('drag start ___________')
       const el = e.target
+
+      // 设置拖拽
+      this.isDrag = true
 
       // 设置拖拽效果
       e.dataTransfer.effectAllowed = "move"
@@ -199,6 +203,12 @@ export default {
     dragEnd(e) {
       // 清除flag, 避免影响移动组件
       // console.log('end2------------')
+      // 设置拖拽
+      let _this = this
+      setTimeout(() => {
+        // console.log('关闭拖拽')
+        _this.isDrag = false
+      }, 100)
       e.dataTransfer.clearData("addFlag")
       this.dragOver.oldY = ""
       this.delComponentHolder(this.componentHolderName)
@@ -268,9 +278,8 @@ export default {
     },
     // 显示工具栏
     showTool (e) {
-      
+      if (this.isDrag) return
       let el = e.target
-
       let componentList = this.pageData.preComponentList
       // 获取当前组件id
       let currentId = this.getComponentAttr(el, "id")
@@ -286,7 +295,6 @@ export default {
     // 隐藏工具栏
     hideTool (e) {
       let el = e.target
-
       let componentList = this.pageData.preComponentList
       // 获取当前组件id
       let currentId = this.getComponentAttr(el, "id")

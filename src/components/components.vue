@@ -47,6 +47,7 @@ export default {
       e.dataTransfer.effectAllowed = "copy";
       e.dataTransfer.setData("info", JSON.stringify(info));
       // 设置拖拽过程中元素样式
+      console.log('el', el)
       let target = this.scaleEle(el);
       e.dataTransfer.setDragImage(target, 0, 10);
     },
@@ -101,6 +102,10 @@ export default {
   margin: 0;
   padding: 0;
   width: 750px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
   list-style: none;
   transform: scale(0.43, 0.43) translate(-498px, -36px);
   > li {
