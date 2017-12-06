@@ -4,12 +4,14 @@
     <span @click.stop="moveDown">下移</span>
     <span @click.stop="deleteComponent">删除</span>
     <span >编辑</span>
-    <span >复制</span>
+    <span @click.stop="copy">复制</span>
   </div>
 </template>
 
 <script>
   import { mapGetters ,mapActions } from "vuex"
+
+  import { guid } from '@utils'
 
   const COMPONENT_NAMER = "toolBar"
   const UP = "UP"
@@ -24,7 +26,8 @@
     methods: {
       ...mapActions([
         "moveComponent",
-        "delComponent"
+        "delComponent",
+        "copyComponent"
       ]),
       // 获取组件属性
       getComponentAttr (el, attr) {
@@ -62,17 +65,30 @@
       // 删除组件
       deleteComponent (e) {
         let el = e.target.parentElement.parentElement
-        // 获取组件列表
-        let componentList = this.pageData.preComponentList
-        // console.log('componentList', componentList)
         // 获取当前组件id
         let currentId = this.getComponentAttr(el, "id")
-        componentList.forEach((item, index) => {
-          if (item.id === currentId) {
-            // 删除组件
-            this.delComponent(index)
-          }
+        this.delComponent(currentId)
+      },
+      // 复制组件
+      copy (e) {
+        let componentList = this.pageData.preComponentList
+        let el = e.target.parentElement.parentElement
+        // 获取当前组件id
+        let currentId = this.getComponentAttr(el, "id")
+        // 获取当前组件
+        let item = componentList.filter(item => {
+          return item.id === currentId
         })
+        // 更新组件属性
+        let componentName = item[0].name
+        let compData = Object.assign({},item[0].data)
+        let info = {
+          name: componentName,
+          data: compData,
+          id: guid(),
+          showToolBar: false
+        }
+        this.copyComponent({ currentId, info })
       }
     },
     computed: {

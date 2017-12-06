@@ -18,15 +18,11 @@ const actions = {
   },
   sortComponents: ({commit, state}, payload) => {
     let { holderName } = payload
-    // console.log('holderIndex', holderName)
-
-    let holderIndex = null
+    let componentList = state.pageData.preComponentList
 
     // 获取holder组件index
-    state.pageData.preComponentList.forEach((item, index) => {
-      if (item.name === holderName) {
-        holderIndex = index
-      }
+    let holderIndex = componentList.findIndex(item => {
+      return item.name === holderName
     })
     // console.log('holderIndex', holderIndex)
     if (holderIndex === null) return
@@ -35,20 +31,17 @@ const actions = {
   
   addComponentHolder: ({commit, state}, payload) => {
     let { info, currentId, direct } = payload
-
+    let componentList = state.pageData.preComponentList
     const temp = state.pageData.tempList[0]
-    // console.log('dragId', temp)
 
     // 判断此id是不是拖拽的id
     if (temp && currentId === temp.id) return
 
-    let currentIndex = null
-
     // 获取当前组件index
-    state.pageData.preComponentList.forEach((item, index) => {
-      if (item.id === currentId) currentIndex = index
+    let currentIndex = componentList.findIndex(item => {
+      return item.id === currentId
     })
-    
+
     // 判断需要添加holder组件的位置,如果向下currentIndex++
     if (direct > 0) currentIndex++
     commit(types.ADD_COMPONNET_HOLDER_GLOBEL, { info, currentIndex })
@@ -60,13 +53,13 @@ const actions = {
 
   delAndAddComponentToTempList: ({commit, state}, payload) => {
     let { dragId } = payload
+    let componentList = state.pageData.preComponentList
 
-    let dragIndex = null
-    
     // 获取拖拽组件index
-    state.pageData.preComponentList.forEach((item, index) => {
-      if (item.id === dragId) dragIndex = index
+    let dragIndex = componentList.findIndex(item => {
+      return item.id === dragId
     })
+
     // console.log('dragIndex', dragIndex)
     commit(types.DEL_AND_ADD_COMPONNET_TO_TEMPLIST_GLOBEL, dragIndex)
   },
@@ -83,8 +76,12 @@ const actions = {
     commit(types.MOVE_COMPONNET_GLOBEL, payload)
   },
   
-  delComponent: ({commit}, componentIndex) => {
-    commit(types.DEL_COMPONNET_GLOBEL, componentIndex)
+  delComponent: ({commit}, componentId) => {
+    commit(types.DEL_COMPONNET_GLOBEL, componentId)
+  },
+  
+  copyComponent: ({commit}, payload) => {
+    commit(types.COPY_COMPONNET_GLOBEL, payload)
   },
   
 }

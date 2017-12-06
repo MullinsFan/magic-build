@@ -17,6 +17,7 @@
 <script>
 import modules from "./modules"
 import { mapActions } from 'vuex'
+import { guid } from '@utils'
 const $window = window;
 const componentHolderName = "componentHolder"
 export default {
@@ -36,12 +37,11 @@ export default {
       let componentName = el.getAttribute("data-name");
       //获取组件默认数据
       let compData = require('./modules/' + componentName + '/' + componentName + '.json')
-      let guid = this.guid()
-      // console.log('guid', guid)
+      let id = guid()
       let info = {
         name: componentName,
         data: compData,
-        id: guid,
+        id: id,
         showToolBar: false
       };
       e.dataTransfer.effectAllowed = "copy";
@@ -79,13 +79,6 @@ export default {
       e.dataTransfer.clearData('addFlag')
       this.delComponentHolder(this.componentHolderName)
       return false;
-    },
-    // 随机生成组件 id
-    guid () {
-      function s4() {
-        return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
-      }
-      return s4() + s4() + '-' + s4()
     }
   },
   components: {

@@ -32,6 +32,7 @@
 
 <script>
 import modules from "./modules"
+import { guid } from '@utils'
 import { mapGetters, mapActions } from 'vuex'
 
 const $window = window
@@ -124,7 +125,7 @@ export default {
       // 设置holder组件信息
       let info = {
         name: this.componentHolderName,
-        id: this.guid()
+        id: guid()
       }
 
       // 获取当前组件id
@@ -264,13 +265,6 @@ export default {
       } else {
         return result
       }
-    },
-    // 随机生成组件 id
-    guid () {
-      function s4() {
-        return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
-      }
-      return s4() + s4() + '-' + s4()
     },
     // 显示工具栏
     showTool (e) {
