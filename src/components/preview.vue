@@ -12,6 +12,7 @@
             <div class="component-wrap"
               @mouseover="showTool"
               @mouseout="hideTool"
+              @onmousedown="hideTool"
               draggable="true"
               @dragend="dragEnd"
               v-for="(item,index) in pageData.preComponentList"
@@ -65,6 +66,8 @@ export default {
       e.dataTransfer.effectAllowed = "move"
       // 获取拖拽模块ID
       let componentEl = this.getComponentByAttr(el, "id")
+      console.log('componentEl')
+      console.log(componentEl)
       let dragId = componentEl.dataset.id
 
       // 设置拖拽过程中元素样式
@@ -224,8 +227,13 @@ export default {
       let height = parseInt(
         $window.getComputedStyle(target).getPropertyValue("height")
       );
-      let $app = document.querySelector("#app");
-      let node = target.cloneNode(true);
+      let $app = document.querySelector("#app")
+      let node = target.cloneNode(true)
+
+      // 移除工具栏
+      if (node.lastChild.className === "tool-wrap") {
+        node.removeChild(node.lastChild)
+      }
       let wrapDiv = document.createElement("div")
       wrapDiv.id = '_temp'
       wrapDiv.appendChild(node)
