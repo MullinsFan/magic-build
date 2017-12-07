@@ -1,5 +1,5 @@
 <template>
-  <div class="componentHolder">+ place holder</div>
+  <div class="componentHolder">+ 放这里</div>
 </template>
 
 <script>
@@ -13,7 +13,8 @@
 <style lang="less" scoped>
 .componentHolder {
   width: 750px;
-  height: 64px;
+  height: 80px;
+  font-size: 30px;
   border: 1px dashed #000;
   display: flex;
   align-items: center;

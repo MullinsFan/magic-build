@@ -3,9 +3,12 @@
   "title": "热图编辑",
   "hotimg": "",
   "url": "http://ohm0er3qe.bkt.clouddn.com/seo2.jpg",
-  "height": "",
-  "width": "" ,
-  "area": {
-
-  }
+  "nowarea": 0,
+  "hot": false,
+  "canvas":{
+    "height": 0,
+    "width": 0
+  },
+  "imgif": false,
+  "regions":[]
 }

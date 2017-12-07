@@ -45,6 +45,13 @@
             "type": "string",
             "format": "color"
           },
+          "hre": {
+            "title": "图片4444接",
+            "val": "",
+            "name": "src",
+            "type": "string",
+            "format": "color"
+          },
           "title": {
             "title": "banner相关文字",
             "val": "",

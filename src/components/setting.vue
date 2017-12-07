@@ -4,22 +4,31 @@
       <ul class="data">
         <li v-for="(item,index) in result" :key="index">
           <label>{{ item.title }} :</label>
-          <input class="upimg" v-if="item.format == 'hotimg'" type='file' @change='update()'/>
-          <input v-model="item.val" placeholder="请填写" v-if="!item.items && item.format != 'hotimg' && !item.areas">
-          <button v-if="item.format == 'size'" class="size" @click="addNum">+</button>
-          <button v-if="item.format == 'size'" class="size" @click="deletNum">-</button>
+          <input class="upimg" v-if="item.format == 'hotimg'" type='file' @change='upimg()'/>
+          <input v-model="item.val" 
+          placeholder="请填写" 
+          v-if="!item.items && item.format != 'hotimg' && !item.area">
           <table class="areas" v-if = "item.area">
-            <tr>
-              <th style="flex:1">热区</th>
-              <th style="flex:2">标题</th>
-              <th style="flex:3">链接</th>
-              <th style="flex:1">操作</th>
-            </tr>
-            <tr v-for="(area,index) in item.area" :key="index">
-              <td v-for="(areaone,index) in area" :key="index">
-                {{areaone.title}}
-              </td>
-            </tr>
+            <thead>
+              <tr>
+                <th style="flex:1">热区</th>
+                <th style="flex:2">标题</th>
+                <th style="flex:3">链接</th>
+                <th style="flex:1">操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(area,index) in item.area" :key="index">
+                <td>{{'热区'+area.id+':'}}</td>
+                <td><input type="text" v-model="area.title"></td>
+                <td><input class="hotimgurl" type="text" v-model="area.url"></td>
+                <td>
+                  <input class="hotimgdelete" title="保存" type="submit" value="+" @click="saveHotimg(index)">
+                  <input class="hotimgdelete" title="删除" type="submit" value="-" @click="deleteHotimg(index)">
+                </td>
+              </tr>
+            </tbody>
+            <input class="addhotimg" type="submit" value="添加热区" @click="addHotarea()">
           </table>
           <color-Picker v-model="item.val" v-if="item.format == 'color'"></color-Picker>
           <table v-if = "item.items">
@@ -162,86 +171,6 @@ export default {
         localStorage.setItem("table" + this.id , JSON.stringify(this.secRes))
       }
     },
-    addItems() {
-      let id = this.id
-      this.count[id] ++
-      let secItems = cloneDeep(this.secItems)
-      this.secRes.push(secItems)
-      this.saveLocal()
-    },
-    clearData() {
-      localStorage.clear()
-    },
-    getPath(fileQuery) {
-        let imgSrc = '', imgArr = [], strSrc = ''
-        let file = fileQuery.files[0]
-        let reader = new FileReader()
-        let flag;
-        let _this = this
-        reader.onload = function(e){
-            imgSrc = fileQuery.value
-            imgArr = imgSrc.split('.')
-            strSrc = imgArr[imgArr.length - 1].toLowerCase()
-            flag = 0
-            if(strSrc.localeCompare('jpg') === 0 || strSrc.localeCompare('jpeg') === 0 || strSrc.localeCompare('gif') === 0 || strSrc.localeCompare('png') === 0) {
-              _this.data.url = e.target.result
-              _this.data.title = ''
-              _this.result.hotimg.val = e.target.result
-              flag = 1
-            } else {
-              throw new Error('File type Error! please image file upload..')
-            }
-        }
-        if (file) {
-          reader.readAsDataURL(file);
-        } else {
-          alert('请选择图片');
-        }
-    },
-    addNum(currentTarget) {
-      let arr = currentTarget.path[1].textContent.substring(0,2)
-      if (arr == '高度') {
-        if(this.result.height.val <0 ){
-          this.result.height.val = '0'
-          this.data.height = 0
-        } else {
-          this.result.height.val++
-          this.data.height++
-        }
-      } else if (arr == '宽度') {
-        if(this.result.width.val <0 ){
-          this.result.width.val = '0'
-        } else {
-          this.result.width.val++
-          this.data.width++
-        }
-      }
-    },
-    deletNum(currentTarget) {
-      let arr = currentTarget.path[1].textContent.substring(0,2)
-      if (arr == '高度') {
-        if(this.result.height.val <0 ){
-          this.result.height.val = '0'
-        } else {
-          this.result.height.val--
-          this.data.height--
-        }
-      } else if (arr == '宽度') {
-        if(this.result.width.val <0 ){
-          this.result.width.val = '0'
-        } else {
-          this.result.width.val--
-          this.data.width--
-        }
-      }
-    },
-    update(){
-        //以下即为完整客户端路径
-        let iptfileupload = document.getElementsByClassName('upimg')[0]
-        // console.log(this.data)
-        console.log(this.result)
-        this.getPath(iptfileupload)
-    },
     handleSubmit() {
       console.log(this.result)
       const vm = this
@@ -280,6 +209,142 @@ export default {
     saveLocal() {
       localStorage.setItem(`'${this.currentComponent.name}'` + this.id , JSON.stringify(this.res))
       localStorage.setItem("table" + this.id , JSON.stringify(this.secRes))
+    },
+    addItems() {
+      let id = this.id
+      this.count[id] ++
+      let secItems = cloneDeep(this.secItems)
+      this.secRes.push(secItems)
+      this.saveLocal()
+    },
+    clearData() {
+      localStorage.clear()
+    },
+    // 热区编辑
+    getPath(fileQuery) {
+        let imgSrc = '', imgArr = [], strSrc = '',data
+        let file = fileQuery.files[0]
+        console.log(file)
+        let reader = new FileReader()
+        let flag;
+        let _this = this
+        let _canvas = _this.data.canvas
+        reader.onload = function(e){
+          imgSrc = fileQuery.value
+          imgArr = imgSrc.split('.')
+          strSrc = imgArr[imgArr.length - 1].toLowerCase()
+          flag = 0
+          data = e.target.result
+          // 图片格式正确
+          if(strSrc.localeCompare('jpg') === 0 || strSrc.localeCompare('jpeg') === 0 || strSrc.localeCompare('gif') === 0 || strSrc.localeCompare('png') === 0) {
+            _this.data.hotimg = data
+            _this.data.title = ''
+            _this.result.hotimg.val = data
+            flag = 1
+            //加载图片获取图片真实宽度和高度  
+            let image = new Image()
+            image.onload=function(){
+              // 改变canvas和编辑区的宽高
+              _canvas.width = image.width
+              _this.result.width.val = image.width
+              _this.result.height.val = image.height
+              _canvas.height = image.height
+            }
+            image.src= data
+            // 新图片插入
+            if(_this.data.imgif) {
+              _this.data.regions = []
+            } else {
+              // 图片开关
+              _this.data.imgif = true
+            }
+          } else {
+            throw new Error('File type Error! please image file upload..')
+          }
+        }
+        if (file) {
+          reader.readAsDataURL(file);
+        } else {
+          // 图片开关
+          _this.data.imgif = false
+          alert('请选择图片');
+        }
+    },
+    // 上传图片
+    upimg(){
+        //以下即为完整客户端路径
+        let iptfileupload = document.getElementsByClassName('upimg')[0]
+        this.getPath(iptfileupload)
+    },
+    saveHotimg(index) {
+      // 获取热区数量
+      let _area =  this.result.areas.area[index]
+      if(_area.url == ""){
+        alert("请输入链接")
+      } else if(_area.title == ""){
+        alert("请输入标题")
+      } else {
+        // 把热区的标题和链接添加到热区上面
+        console.log(_area.url)
+        this.data.regions[index].href = _area.url
+        console.log(this.data.regions[index].href)
+        this.data.regions[index].title = _area.title
+        // 改变热区编辑状态
+        this.data.hot = false
+        // 保存vuex
+        this.saveLocal()
+        this.setComponentsData({
+        index: this.currentComponent.index,
+        data: this.data
+      })
+      }
+    },
+    deleteHotimg(index){
+      // 删除节点
+      this.result.areas.area.splice(index,1)
+      // 删除热区
+      this.data.regions.splice(index,1)
+      // 如果删除节点刚好是正在编辑节点则关闭热区编辑状态
+      index = index + 1
+      if(index == this.data.nowarea){
+        this.data.nowarea--
+        this.data.hot = false
+      }
+    },
+    addHotarea(e) {
+      if(!this.data.imgif) {
+        alert('请先上传图片')
+      } else {
+        if(this.data.hot){
+          alert("请先保存先前热区")
+        } else {
+          let _area = this.result.areas.area
+          let newId = _area.length + 1
+          // 在操作区创建一个新的热区
+          let newArea = {
+            "id": newId,
+            "title": "",
+            "url": "",
+            "region": ""
+          }
+          // 插入热区到数组
+          _area.splice(newId,0,newArea)
+          // 在显示区创建一个新的热区
+          let _region = this.data.regions
+          let newRegion = {
+            "id": this.data.nowarea,
+            "title": "",
+            "region": "",
+            "href": ""
+          }
+          // 插入热区到数组
+          this.data.regions.push(newRegion)
+          //  改变光标
+          this.data.hot = true
+          // 改变热区数量
+          this.data.nowarea = _area.length
+        }
+      }
     }
   }
 };
@@ -372,6 +437,7 @@ export default {
     display: flex;
     flex-direction: column;
     table-layout:fixed;
+    align-items: center;
     tr {
       display: flex;
       justify-content: center;
@@ -380,6 +446,7 @@ export default {
         width: 74px;
         margin-top: 0px;
         line-height: 20px;
+        padding: 0;
       }
       td:first-child,td:last-child {
         flex: 1;
@@ -390,6 +457,33 @@ export default {
       td + td + td {
         flex: 3;
       }
+    }
+    tbody {
+      tr {
+        td {
+          input {
+            width: 60px;
+          }
+          .hotimgurl {
+            width: 80px;
+          }
+          .hotimgdelete {
+            cursor: pointer;
+            height: auto;
+            width: auto;
+            border-radius: 50%;
+          }
+        }
+      }
+    }
+    .addhotimg {
+      line-height: 20px;
+      margin-top: 10px;
+      background-color: #7e57c2;
+      width: 30%;
+      border-radius: 4px;
+      cursor: pointer;
+      color: #fff;
     }
   }
 }

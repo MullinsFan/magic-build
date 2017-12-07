@@ -11,13 +11,13 @@
             @click="handleClick">
           <transition-group name="drag" tag="div">
             <div draggable="true"
-            v-for="(item,index) in pageData.preComponentList"
-            :data-index="index"
-            :data-id="item.id"
-            :key="item.id"
-            :is="item.name"
-            :data="item.data"
-            ></div>
+              v-for="(item,index) in pageData.preComponentList"
+              :key="item.id"
+              :data-index="index"
+              :data-id="item.id">
+              <div :is="item.name"
+                  :data="item.data"></div>
+            </div>
           </transition-group>
         </div>
       </div>
@@ -28,6 +28,7 @@
 import modules from "./modules"
 import { mapGetters, mapActions } from 'vuex'
 
+const $window = window
 const componentHolderName = "componentHolder"
 
 export default {
@@ -41,24 +42,38 @@ export default {
   },
   methods: {
     ...mapActions([
-      'sortComponents',
-      'addComponents',
-      'setCurrentComponent',
-      'addComponentHolder',
-      'delComponentHolder'
+      "sortComponents",
+      "addComponents",
+      "setCurrentComponent",
+      "addComponentHolder",
+      "delComponentHolder",
+      "delAndAddComponentToTempList"
     ]),
     moveItem (e) {
-      console.log('drag start ___________')
+      this.dragOver.oldY = ""
+      // console.log('drag start ___________')
       const el = e.target
-      // 获取拖拽模块index并存储
-      let elIndex = el.dataset.index
-      e.dataTransfer.setData('itemIndex', elIndex)
+
+      // 设置拖拽效果
+      e.dataTransfer.effectAllowed = "move"
+      // 获取拖拽模块ID
+      let componentEl = this.getComponentByAttr(el, "id")
+      let dragId = componentEl.dataset.id
+
+      // 设置拖拽过程中元素样式
+      let target = this.scaleEle(componentEl);
+      e.dataTransfer.setDragImage(target, -30, -30);
+
+      // 删除并暂存当前拖拽组件
+      this.delAndAddComponentToTempList({ dragId })
     },
     drop(e) {
-      // console.log("drop -----------")
+      const el = e.target
+      this.hasUp = false
+      this.hasDown = false
       this.dragOver.oldY = ""
       // 放下拖拽元素操作
-      let addFlag = e.dataTransfer.getData('addFlag')
+      let addFlag = e.dataTransfer.getData("addFlag")
       // 判断是添加模块还是拖动模块
       if (addFlag) {
         let { name, data, id } = JSON.parse(e.dataTransfer.getData("info"));
@@ -73,72 +88,88 @@ export default {
         }
         this.addComponents(payload)
       } else {
-        this.delComponentHolder(this.componentHolderName)
+
         // 解决拖到空白地方报错
-        if (e.target === e.currentTarget) return
-        // 获取当前组件index
-        let currentIndex = this.findIndex(e.target)
-        // 获取拖拽组件index
-        let dragIndex = e.dataTransfer.getData('itemIndex')
-        // 若拖到相同组件则不改变组件顺序
-        if (!currentIndex || currentIndex === dragIndex) return
+        if (el === e.currentTarget) return
+
         // 重新排序
-        this.sortComponents({ currentIndex: currentIndex, dragIndex: dragIndex })
+        this.sortComponents({ holderName: this.componentHolderName })
       }
     },
     dragOver(e) {
-      console.log('drag over ____________')
       /*拖拽元素在目标元素头上移动的时候*/
+      const el = e.target
       e.preventDefault();
+
       // 处理 dataset of null 报错
-      if (e.target === e.currentTarget.children[0] || e.target === e.currentTarget || e.target.className === "componentHolder") return
+      if (el === e.currentTarget.children[0] || el === e.currentTarget || el.className === "componentHolder") return
+
       // 设置holder组件信息
       let info = {
         name: this.componentHolderName,
         id: this.guid()
       }
+
+      // 获取当前组件id
+      let currentId = this.getComponentAttr(el, "id")
+      // console.log('currentId', currentId)
+
       // 判断是否初始化
       if (!this.dragOver.oldY) this.dragOver.oldY = e.screenY
-      // console.log('old, new:', this.dragOver.oldY, e.screenY)
+      if (!this.dragOver.oldId) this.dragOver.oldId = currentId
       // 当前y值与oldY作差
-      let d = e.screenY - this.dragOver.oldY
-      let direct = ""
-      // 判断鼠标移动方向
-      if (d < 0) {
-        direct = "up"
-      } else if (d > 0) {
-        direct = "down"
-      } else {
-        return false
+      let direct = e.screenY - this.dragOver.oldY
+      // 判断是否还在当前组件
+      if (this.dragOver.oldId !== currentId) {
+        // console.log('oldel el', el, this.dragOver.oldEl)
+        // console.log('组件切换')
+        this.hasUp = false
+        this.hasDown = false
       }
-      console.log('direct', direct)
+      // 保存现在的y
       this.dragOver.oldY = e.screenY
 
-      // 获取当前组件index
-      let currentIndex = this.findIndex(e.target)
+      // 保存现在的Id
+      this.dragOver.oldId = currentId
 
-      // 获取组件宽度
-      // let elHeight = this.getComponentAttr(e.target, 'clientHeight')
-      // let elOffsetY = e.offsetY
-      // console.log('elHeight', elHeight)
-      // console.log('elOffsetY', elOffsetY)
-      // 判断鼠标移动方向
-      if (direct === "up") {
-        this.hasDown = false
-        if (!this.hasUp) {
-          this.delComponentHolder(this.componentHolderName)
-          this.addComponentHolder({info, currentIndex})
-          this.hasUp = true
-        }
-      } else if (direct === "down") {
+      // console.log('判断之前 direct, hasUp, hasdown：', direct, this.hasUp, this.hasDown)
+
+      if (direct > 0) {
+        // console.log('down---------------')
+        // this.hasDown = false
         this.hasUp = false
         if (!this.hasDown) {
+          // console.log('开始删除组件')
+          // 删除页面中的holder组件
           this.delComponentHolder(this.componentHolderName)
-          this.addComponentHolder({info, currentIndex})
+
+          // 获取当前组件id
+          let currentId = this.getComponentAttr(el, "id")
+          // console.log('添加组件')
+          // 添加hloder组件
+          this.addComponentHolder({info, currentId, direct})
           this.hasDown = true
         }
+      } else if (direct < 0) {
+        // console.log('up---------------')
+        // this.hasUp = false
+        this.hasDown = false
+        // console.log('!this.hasUp', !this.hasUp)
+        if (!this.hasUp) {
+          // console.log('开始删除组件')
+          // 删除页面中的holder组件
+          this.delComponentHolder(this.componentHolderName)
+
+          // 获取当前组件id
+          let currentId = this.getComponentAttr(el, "id")
+          // console.log('添加组件')
+          // 添加hloder组件
+          this.addComponentHolder({info, currentId, direct})
+          this.hasUp = true
+        }
+      } else {
+        return true;
       }
-      return true;
     },
     dragEnter(e) {
       /*拖拽元素进入目标元素头上的时候*/
@@ -146,19 +177,25 @@ export default {
       return true;
     },
     dragLeave(e) {
-      console.log('drag leave ------')
+      // console.log('drag leave ------')
+      this.dragOver.oldY = ""
     },
     dragEnd(e) {
       // 清除flag, 避免影响移动组件
-      e.dataTransfer.clearData('addFlag')
+      e.dataTransfer.clearData("addFlag")
+      this.dragOver.oldY = ""
+      this.delComponentHolder(this.componentHolderName)
+      document.querySelector('#app').removeChild(document.querySelector('#_temp'))
       return false;
     },
     handleClick(e) {
-      if (e.target === e.currentTarget) return
-      let index = this.findIndex(e.target)
+      const el = e.target
+      if (el === e.currentTarget) return
+      let index = this.getComponentAttr(el, "index")
       let name = this.pageData.preComponentList[index].name
       let id = this.pageData.preComponentList[index].id
       this.setCurrentComponent({ index, name, id })
+      
       //引入组件相应的schema文件,存入本地
       this.schemaData = require('./modules/' + name + '/' + name + 'schema.json')
       
@@ -166,25 +203,47 @@ export default {
       if(!schema) localStorage.setItem(`'${name}'` + id , JSON.stringify(this.schemaData))
       //触发show
     },
-    //递归查找index
-    findIndex(element) {
-      let index = element.dataset.index
-      if(index === undefined) {
-        return this.findIndex(element.parentElement)
+    scaleEle(target) {
+      // 缩放拖拽过程元素
+      let width = parseInt(getComputedStyle(target).getPropertyValue("width"));
+      let height = parseInt(
+        $window.getComputedStyle(target).getPropertyValue("height")
+      );
+      let $app = document.querySelector("#app");
+      let node = target.cloneNode(true);
+      let wrapDiv = document.createElement("div")
+      wrapDiv.id = '_temp'
+      wrapDiv.appendChild(node)
+      Object.assign(wrapDiv.style,{
+        listStyle: "none",
+        opacity: "1",
+        position: "fixed",
+        width: width * 0.448 + "px",
+        height: height * 0.448 + "px",
+        top: "-200000px",
+        paddingLeft: "120px",
+      })
+      $app.appendChild(wrapDiv);
+      return wrapDiv
+    },
+    // 通过特殊属性找到组件
+    getComponentByAttr (el, attr) {
+      let result = el.dataset[attr]
+      if(result === undefined) {
+        return this.getComponentByAttr(el.parentElement, attr)
       } else {
-        return index
+        return el
       }
     },
     // 获取组件属性
     getComponentAttr (el, attr) {
-      let index = el.dataset.index
-      if(index === undefined) {
+      let result = el.dataset[attr]
+      if(result === undefined) {
         return this.getComponentAttr(el.parentElement, attr)
       } else {
-        return el[attr]
+        return result
       }
-    }
-    ,
+    },
     // 随机生成组件 id
     guid () {
       function s4() {
@@ -208,7 +267,7 @@ export default {
 <style lang="less" scoped>
 /* 动画 */
 .drag-move {
-  transition: transform .0s;
+  transition: transform .07s;
 }
 .wrap {
   flex: 1;
