@@ -7,7 +7,7 @@
       <li draggable="true" data-name="banner">
           <banner></banner>
       </li>
-       <li draggable="true" data-name="list">
+      <li draggable="true" data-name="list">
           <list></list>
       </li>
       <li draggable="true" data-name="hotpicture">
@@ -23,6 +23,7 @@
 <script>
 import modules from "./modules"
 import { mapActions } from 'vuex'
+import { guid } from '@utils'
 const $window = window;
 const componentHolderName = "componentHolder"
 export default {
@@ -42,16 +43,17 @@ export default {
       let componentName = el.getAttribute("data-name");
       //获取组件默认数据
       let compData = require('./modules/' + componentName + '/' + componentName + '.json')
-      let guid = this.guid()
-      // console.log('guid', guid)
+      let id = guid()
       let info = {
         name: componentName,
         data: compData,
-        id: guid
+        id: id,
+        showToolBar: false
       };
       e.dataTransfer.effectAllowed = "copy";
       e.dataTransfer.setData("info", JSON.stringify(info));
       // 设置拖拽过程中元素样式
+      console.log('el', el)
       let target = this.scaleEle(el);
       e.dataTransfer.setDragImage(target, 0, 10);
     },
@@ -77,20 +79,13 @@ export default {
     },
     dragEnd(e) {
       /*拖拽结束*/
-      this.delComponentHolder(this.componentHolderName)
-      // console.log('drag end')
+      // console.log('drag end1')
       document.querySelector('#app').removeChild(document.querySelector('#_temp'))
       e.dataTransfer.clearData("info");
       // 清除flag, 避免影响移动组件
       e.dataTransfer.clearData('addFlag')
+      this.delComponentHolder(this.componentHolderName)
       return false;
-    },
-    // 随机生成组件 id
-    guid () {
-      function s4() {
-        return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
-      }
-      return s4() + s4() + '-' + s4()
     }
   },
   components: {
@@ -113,6 +108,10 @@ export default {
   margin: 0;
   padding: 0;
   width: 750px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
   list-style: none;
   transform: scale(0.43, 0.43) translate(-498px, -36px);
   > li {

@@ -11,11 +11,12 @@ const mutations = {
   },
 
   [types.ADD_COMPONENTS](state, payload) {
+    let componentList = state.pageData.preComponentList
     let { info, holderName } = payload
-    if (state.pageData.preComponentList.length === 0) {
-      state.pageData.preComponentList.push(info)
+    if (componentList.length === 0) {
+      componentList.push(info)
     } else {
-      state.pageData.preComponentList.forEach((item, index, array) => {
+      componentList.forEach((item, index, array) => {
         if (item.name === holderName) {
           array.splice(index, 1, info)
         }
@@ -48,19 +49,69 @@ const mutations = {
   [types.DEL_COMPONNET_HOLDER_GLOBEL] (state, name) {
     let holderName = name
     let newArr = state.pageData.preComponentList.filter(function (item) {
-      if (item.name !== holderName) {
-        return item
-      }
+      if (item.name !== holderName) return item
     })
     state.pageData.preComponentList = newArr
   },
 
   [types.DEL_AND_ADD_COMPONNET_TO_TEMPLIST_GLOBEL] (state, dragIndex) {
-    // console.log('in mutations dragIndex', dragIndex)
-    let temp = state.pageData.preComponentList.splice(dragIndex, 1)
-    state.pageData.tempList = temp
-    // console.log('state.pageData.tempList', state.pageData.tempList)
+    state.pageData.tempList = state.pageData.preComponentList.splice(dragIndex, 1)
   },
+
+  [types.SHOW_TOOL_BAR_GLOBEL](state, componentIndex) {
+    state.pageData.preComponentList[componentIndex].showToolBar = true
+  },
+
+  [types.HIDE_TOOL_BAR_GLOBEL](state, componentIndex) {
+    state.pageData.preComponentList[componentIndex].showToolBar = false
+  },
+  
+  [types.MOVE_COMPONNET_GLOBEL](state, payload) {
+    let { currentId, direct } = payload
+    let componentList = state.pageData.preComponentList
+    let totalComponent = componentList.length
+    let temp = []
+
+    // 获取当前组件index
+    let currentIndex = componentList.findIndex(item => {
+      return item.id === currentId
+    })
+    // 判断是否可以上下移动
+    if (direct === "UP" && currentIndex > 0) {
+      temp = componentList.splice(currentIndex, 1)
+      currentIndex--
+      componentList.splice(currentIndex, 0, temp[0])
+    } else if (direct === "DOWN" && currentIndex < totalComponent) {
+      temp = componentList.splice(currentIndex, 1)
+      currentIndex++
+      componentList.splice(currentIndex, 0, temp[0])
+    } else {
+      return false
+    }
+  },
+
+  [types.DEL_COMPONNET_GLOBEL](state, componentId) {
+    let componentList = state.pageData.preComponentList
+    // 找到并删除组件
+    componentList.forEach((item, index, array) => {
+      if (item.id === componentId) {
+        array.splice(index, 1)
+      }
+    })
+  },
+
+  [types.COPY_COMPONNET_GLOBEL] (state, payload) {
+    let componentList = state.pageData.preComponentList
+    let { currentId, info } = payload
+    // 添加复制的组件
+    componentList.forEach((item, index, array) => {
+      if (item.id === currentId) {
+        index++
+        array.splice(index, 0, info)
+      }
+    })
+  }
+
 }
 
 export default mutations

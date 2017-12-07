@@ -55,19 +55,19 @@ export default {
       let canvas = _this.getElementsa("tutorial")
       // 获取热区的角标
       let _index = _this.data.nowarea - 1
+        // 获取鼠标相对于图片左上角的位置
       // 如果处于热编辑阶段
       if(_this.data.hot){
-        // 获取鼠标相对于图片左上角的位置
+        // 添加热区坐标
         let _region = _this.data.regions
         let index = _region.length - 1
-        // 添加热区坐标
+      _region[index].region = _this.haha(_region[index].region,e)
         // console.log("_region[index].region,e",e)
-        // _region[index].region = _this.haha(_region[index].region,e)
-        if(_region[index].region == "") {
-          _this.data.regions[index].region = e.offsetX + ',' + e.offsetY
-        } else {
-          _this.data.regions[index].region = _region[index].region + ',' + e.offsetX + ',' + e.offsetY
-        }
+        // if(_region[index].region == "") {
+        //   _this.data.regions[index].region = e.offsetX + ',' + e.offsetY
+        // } else {
+        //   _this.data.regions[index].region = _region[index].region + ',' + e.offsetX + ',' + e.offsetY
+        // }
         // 绘制canvas图形 
         (function draw() {
           // 检测浏览器是否支持canvas元素

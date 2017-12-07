@@ -7,16 +7,22 @@
             @dragover="dragOver"
             @dragenter="dragEnter"
             @dragleave="dragLeave"
-            @dragend="dragEnd"
             @click="handleClick">
           <transition-group name="drag" tag="div">
-            <div draggable="true"
+            <div class="component-wrap"
+              @mouseover="showTool"
+              @mouseout="hideTool"
+              @onmousedown="hideTool"
+              draggable="true"
+              @dragend="dragEnd"
               v-for="(item,index) in pageData.preComponentList"
               :key="item.id"
               :data-index="index"
               :data-id="item.id">
               <div :is="item.name"
-                  :data="item.data"></div>
+                  :data="item.data"
+                  ></div>
+              <div v-show="item.showToolBar" is="toolBar"></div>
             </div>
           </transition-group>
         </div>
@@ -26,6 +32,7 @@
 
 <script>
 import modules from "./modules"
+import { guid } from '@utils'
 import { mapGetters, mapActions } from 'vuex'
 
 const $window = window
@@ -37,7 +44,8 @@ export default {
       schemaData: null,
       componentHolderName: componentHolderName,
       hasUp: false,
-      hasDown: false
+      hasDown: false,
+      isDrag: false
     };
   },
   methods: {
@@ -47,12 +55,17 @@ export default {
       "setCurrentComponent",
       "addComponentHolder",
       "delComponentHolder",
-      "delAndAddComponentToTempList"
+      "delAndAddComponentToTempList",
+      "showToolBar",
+      "hideToolBar"
     ]),
     moveItem (e) {
       this.dragOver.oldY = ""
       // console.log('drag start ___________')
       const el = e.target
+
+      // 设置拖拽
+      this.isDrag = true
 
       // 设置拖拽效果
       e.dataTransfer.effectAllowed = "move"
@@ -68,6 +81,7 @@ export default {
       this.delAndAddComponentToTempList({ dragId })
     },
     drop(e) {
+      // console.log('drop-------------')
       const el = e.target
       this.hasUp = false
       this.hasDown = false
@@ -76,11 +90,12 @@ export default {
       let addFlag = e.dataTransfer.getData("addFlag")
       // 判断是添加模块还是拖动模块
       if (addFlag) {
-        let { name, data, id } = JSON.parse(e.dataTransfer.getData("info"));
+        let { name, data, id, showToolBar } = JSON.parse(e.dataTransfer.getData("info"));
         let componentInfo = {
           name: name,
           data: data,
-          id: id
+          id: id,
+          showToolBar: showToolBar
         }
         let payload = {
           info: componentInfo,
@@ -98,16 +113,23 @@ export default {
     },
     dragOver(e) {
       /*拖拽元素在目标元素头上移动的时候*/
+      // console.log('drag over ----------')
       const el = e.target
       e.preventDefault();
 
       // 处理 dataset of null 报错
-      if (el === e.currentTarget.children[0] || el === e.currentTarget || el.className === "componentHolder") return
+      if (el === e.currentTarget.children[0] || el.className === "componentHolder") return
+
+      // 拖拽到空白处取消提示
+      if (el === e.currentTarget) {
+        this.delComponentHolder(this.componentHolderName)
+        return false
+      }
 
       // 设置holder组件信息
       let info = {
         name: this.componentHolderName,
-        id: this.guid()
+        id: guid()
       }
 
       // 获取当前组件id
@@ -131,8 +153,6 @@ export default {
 
       // 保存现在的Id
       this.dragOver.oldId = currentId
-
-      // console.log('判断之前 direct, hasUp, hasdown：', direct, this.hasUp, this.hasDown)
 
       if (direct > 0) {
         // console.log('down---------------')
@@ -168,13 +188,13 @@ export default {
           this.hasUp = true
         }
       } else {
-        return true;
+        return true
       }
     },
     dragEnter(e) {
       /*拖拽元素进入目标元素头上的时候*/
       // console.log('drag enter ------')
-      return true;
+      return true
     },
     dragLeave(e) {
       // console.log('drag leave ------')
@@ -182,6 +202,13 @@ export default {
     },
     dragEnd(e) {
       // 清除flag, 避免影响移动组件
+      // console.log('end2------------')
+      // 设置拖拽
+      let _this = this
+      setTimeout(() => {
+        // console.log('关闭拖拽')
+        _this.isDrag = false
+      }, 100)
       e.dataTransfer.clearData("addFlag")
       this.dragOver.oldY = ""
       this.delComponentHolder(this.componentHolderName)
@@ -209,8 +236,13 @@ export default {
       let height = parseInt(
         $window.getComputedStyle(target).getPropertyValue("height")
       );
-      let $app = document.querySelector("#app");
-      let node = target.cloneNode(true);
+      let $app = document.querySelector("#app")
+      let node = target.cloneNode(true)
+
+      // 移除工具栏
+      if (node.lastChild.className === "tool-wrap") {
+        node.removeChild(node.lastChild)
+      }
       let wrapDiv = document.createElement("div")
       wrapDiv.id = '_temp'
       wrapDiv.appendChild(node)
@@ -221,7 +253,7 @@ export default {
         width: width * 0.448 + "px",
         height: height * 0.448 + "px",
         top: "-200000px",
-        paddingLeft: "120px",
+        paddingLeft: "80px",
       })
       $app.appendChild(wrapDiv);
       return wrapDiv
@@ -244,12 +276,36 @@ export default {
         return result
       }
     },
-    // 随机生成组件 id
-    guid () {
-      function s4() {
-        return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
-      }
-      return s4() + s4() + '-' + s4()
+    // 显示工具栏
+    showTool (e) {
+      if (this.isDrag) return
+      let el = e.target
+      let componentList = this.pageData.preComponentList
+      // 获取当前组件id
+      let currentId = this.getComponentAttr(el, "id")
+      // 是否显示
+      componentList.forEach((item, index) => {
+        if (item.id === currentId) {
+          if (!item.showToolBar) {
+            this.showToolBar(index)
+          }
+        }
+      })
+    },
+    // 隐藏工具栏
+    hideTool (e) {
+      let el = e.target
+      let componentList = this.pageData.preComponentList
+      // 获取当前组件id
+      let currentId = this.getComponentAttr(el, "id")
+      // 检查是否隐藏
+      componentList.forEach((item, index) => {
+        if (item.id === currentId) {
+          if (item.showToolBar) {
+            this.hideToolBar(index)
+          }
+        }
+      })
     }
   },
   computed: {
@@ -308,6 +364,9 @@ export default {
     &::-webkit-scrollbar-track-piece {
       background-color: rgba(0, 0, 0, 0.05);
       -webkit-border-radius: 5px;
+    }
+    .component-wrap {
+      position: relative;
     }
   }
 }

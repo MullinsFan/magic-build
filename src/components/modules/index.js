@@ -4,13 +4,15 @@ import list from './list/list'
 import hotpicture from './hotpicture/hotpicture'
 import colorPicker from './color-picker/colorPicker'
 
+import toolBar from '../toolbar'
 import componentHolder from '../componentHolder'
 
 export default {
   topHeader,
   banner,
   list,
-  colorPicker,  
+  colorPicker,
   componentHolder,
+  toolBar,
   hotpicture
 }
